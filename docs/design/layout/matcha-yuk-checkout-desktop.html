@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<title>Matcha Yuk - Pembayaran &amp; Pilih Metode Payment</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cantora+One&amp;family=Fira+Code:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#5ea500",
+            "primary-container": "#5ea500",
+            "on-primary": "#ffffff",
+            "primary-fixed": "#aaf85c",
+            "on-primary-fixed": "#0e2000",
+            "surface-tint": "#3b6a00",
+            surface: "#fcf8f8",
+            background: "#ffffff",
+            "on-surface": "#1c1b1b",
+            "on-surface-variant": "#414937",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f6f3f2",
+            "surface-container": "#f0edec",
+            "surface-container-high": "#ebe7e7",
+            "surface-variant": "#e5e2e1",
+            border: "#e5e5e5",
+            outline: "#717a66",
+            "outline-variant": "#c1cab2",
+            error: "#ba1a1a",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "muted-foreground": "#737373"
+          },
+          fontFamily: {
+            headline: ["Playfair Display", "serif"],
+            body: ["Cantora One", "sans-serif"],
+            code: ["Fira Code", "monospace"],
+            sans: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Cantora One', sans-serif;
+      background-color: #fcf8f8;
+      color: #1c1b1b;
+    }
+    .font-playfair {
+      font-family: 'Playfair Display', serif;
+    }
+    .font-fira {
+      font-family: 'Fira Code', monospace;
+    }
+    .neo-shadow {
+      box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.06);
+    }
+    .neo-shadow-lg {
+      box-shadow: 6px 6px 0px 0px rgba(0,0,0,0.08);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col antialiased selection:bg-primary selection:text-white">
+<!-- TOP BAR & NAVIGATION -->
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-sm">
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+<!-- Left: Logo & Table Badge -->
+<div class="flex items-center gap-4">
+<a class="flex items-center gap-2 group" href="#">
+<div class="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-xl neo-shadow group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">local_cafe</span>
+</div>
+<div class="flex flex-col">
+<span class="font-playfair font-bold text-xl tracking-tight text-on-surface">MATCHA YUK</span>
+<span class="font-fira text-[11px] text-on-surface-variant uppercase tracking-wider font-medium">Artisan Japanese Tea</span>
+</div>
+</a>
+<div class="hidden sm:flex items-center gap-2 bg-primary-fixed/50 text-on-primary-fixed px-3 py-1.5 rounded-full border border-primary/30 text-xs font-semibold">
+<span class="material-symbols-outlined text-[16px] text-primary">table_restaurant</span>
+<span class="font-fira uppercase tracking-wider">LOKASI MEJA 05 (DINE-IN)</span>
+</div>
+</div>
+<!-- Center: Flow Indicator -->
+<nav class="hidden md:flex items-center gap-2 font-fira text-xs">
+<span class="text-muted-foreground flex items-center gap-1.5 hover:text-on-surface cursor-pointer transition-colors">
+<span class="w-5 h-5 rounded-full bg-surface-container flex items-center justify-center font-bold text-[10px]">1</span>
+<span>Keranjang</span>
+</span>
+<span class="material-symbols-outlined text-muted-foreground text-[14px]">chevron_right</span>
+<span class="text-primary font-bold flex items-center gap-1.5 bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+<span class="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[10px]">2</span>
+<span>Pembayaran &amp; QRIS (Aktif)</span>
+</span>
+<span class="material-symbols-outlined text-muted-foreground text-[14px]">chevron_right</span>
+<span class="text-muted-foreground/60 flex items-center gap-1.5">
+<span class="w-5 h-5 rounded-full bg-surface-container flex items-center justify-center font-bold text-[10px]">3</span>
+<span>Selesai</span>
+</span>
+</nav>
+<!-- Right: Timer & SSL Badge -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 bg-error-container/60 text-on-error-container border border-error/20 px-3 py-1.5 rounded-lg text-xs font-fira font-medium">
+<span class="material-symbols-outlined text-[16px] text-error animate-pulse">timer</span>
+<span>Selesaikan dalam <strong class="font-bold" id="header-timer">14:20</strong></span>
+</div>
+<div class="hidden lg:flex items-center gap-1 text-[11px] font-fira text-muted-foreground bg-surface-container-low px-2.5 py-1.5 rounded border border-border">
+<span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>
+<span>256-Bit SSL Encrypted</span>
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN WRAPPER -->
+<main class="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Top Breadcrumb Mobile Info -->
+<div class="flex sm:hidden items-center justify-between mb-4 bg-primary-fixed/30 border border-primary/20 p-2.5 rounded-lg">
+<div class="flex items-center gap-2 text-xs font-fira font-medium text-on-primary-fixed">
+<span class="material-symbols-outlined text-[16px] text-primary">table_restaurant</span>
+<span>Meja 05 (Dine-in)</span>
+</div>
+<span class="text-[11px] font-fira text-muted-foreground">Order #MY-88219</span>
+</div>
+<!-- TWO-COLUMN LAYOUT -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- LEFT COLUMN: 62% Width (lg:col-span-7 or 8) -->
+<section class="lg:col-span-7 xl:col-span-8 flex flex-col gap-6">
+<!-- Dine-in Status Header Card -->
+<div class="bg-white rounded-xl border border-border p-5 neo-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-center gap-3.5">
+<div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[28px]">receipt_long</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h1 class="font-playfair font-bold text-2xl text-on-surface">Dine-in: Meja 05</h1>
+<span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 text-[11px] font-fira font-bold px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
+                  MENUNGGU PEMBAYARAN
+                </span>
+</div>
+<p class="font-fira text-xs text-muted-foreground mt-0.5">
+                Order ID: <span class="font-bold text-on-surface">#MY-88219</span> • Waktu Pemesanan: 14:15 WIB
+              </p>
+</div>
+</div>
+<div class="sm:text-right flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-3 sm:pt-0 border-border">
+<span class="font-fira text-xs text-muted-foreground">Total Tagihan</span>
+<span class="font-fira font-bold text-xl text-primary">Rp 43.560</span>
+</div>
+</div>
+<!-- Digital Receipt Section (Penerima Struk Digital) -->
+<div class="bg-white rounded-xl border border-border p-5 neo-shadow flex flex-col gap-3">
+<div class="flex items-center justify-between border-b border-border/60 pb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">sms</span>
+<h2 class="font-bold text-base text-on-surface font-sans">Penerima Struk Digital &amp; Antrean Barista</h2>
+</div>
+<button class="text-xs font-fira font-semibold text-primary hover:underline hover:text-surface-tint" type="button">
+              Ubah Data
+            </button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+<div class="bg-surface-container-low/70 border border-border p-3 rounded-lg flex items-center justify-between">
+<div>
+<span class="block text-[11px] font-fira text-muted-foreground uppercase">Nama Pemesan</span>
+<span class="font-bold text-sm text-on-surface font-sans">Budi Santoso</span>
+</div>
+<span class="material-symbols-outlined text-muted-foreground text-[18px]">person</span>
+</div>
+<div class="bg-surface-container-low/70 border border-border p-3 rounded-lg flex items-center justify-between">
+<div>
+<span class="block text-[11px] font-fira text-muted-foreground uppercase">Nomor WhatsApp</span>
+<div class="flex items-center gap-1.5">
+<span class="font-bold font-fira text-sm text-on-surface">0812-8921-8901</span>
+<span class="bg-primary-fixed text-on-primary-fixed text-[10px] font-fira font-bold px-1.5 py-0.5 rounded uppercase">
+                    OTOMATIS WHATSAPP
+                  </span>
+</div>
+</div>
+<span class="material-symbols-outlined text-emerald-600 text-[18px]">chat</span>
+</div>
+</div>
+<p class="text-[12px] text-muted-foreground font-sans italic">
+            *Struk pembayaran elektronik (e-receipt) dan notifikasi minuman siap saji akan langsung dikirimkan ke WhatsApp Anda.
+          </p>
+</div>
+<!-- Promo / Voucher Code box -->
+<div class="bg-white rounded-xl border border-border p-5 neo-shadow">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary text-[20px]">local_offer</span>
+<h2 class="font-bold text-base text-on-surface font-sans">Kupon &amp; Diskon Promo Meja</h2>
+</div>
+<div class="flex flex-col sm:flex-row gap-2.5">
+<div class="relative flex-1">
+<input class="w-full bg-surface-container-low border border-border rounded-lg px-3.5 py-2.5 text-sm font-fira uppercase font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all" type="text" value="DISKONMEJA10"/>
+<span class="absolute right-3 top-2.5 text-primary material-symbols-outlined text-[18px]">verified</span>
+</div>
+<button class="bg-on-surface text-white hover:bg-black font-fira text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5" type="button">
+<span>GUNAKAN</span>
+</button>
+</div>
+<!-- Applied voucher pill -->
+<div class="mt-3 inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-lg text-xs font-fira">
+<span class="material-symbols-outlined text-emerald-600 text-[16px]">check_circle</span>
+<span>Voucher <strong>DISKONMEJA10</strong> Berhasil Terpasang (-Rp 4.400)</span>
+<button class="ml-1 text-emerald-700 hover:text-error text-[11px] underline" type="button">Hapus</button>
+</div>
+</div>
+<!-- Payment Method Selection ("Metode Pembayaran") -->
+<div class="bg-white rounded-xl border border-border p-5 neo-shadow flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-border/70 pb-3">
+<div>
+<h2 class="font-playfair font-bold text-xl text-on-surface">Pilih Metode Pembayaran</h2>
+<p class="text-xs text-muted-foreground font-sans mt-0.5">Semua transaksi diverifikasi instan oleh POS Barista</p>
+</div>
+<span class="hidden sm:inline-block bg-primary/10 text-primary border border-primary/20 text-xs font-fira font-bold px-2.5 py-1 rounded">
+              Bebas Biaya Admin
+            </span>
+</div>
+<!-- Tab / Card 1: QRIS INSTAN (ACTIVE & EXPANDED) -->
+<div class="border-2 border-primary rounded-xl p-4 bg-primary/[0.02] relative transition-all">
+<div class="flex items-center justify-between cursor-pointer">
+<label class="flex items-center gap-3 cursor-pointer">
+<div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center bg-primary text-white">
+<span class="material-symbols-outlined text-[14px] font-bold">check</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-bold text-base text-on-surface font-sans">QRIS (Semua Pembayaran)</span>
+<span class="bg-primary text-white text-[10px] font-fira font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                      REKOMENDASI
+                    </span>
+</div>
+<p class="text-xs text-muted-foreground font-fira mt-0.5">BCA, Mandiri, GoPay, ShopeePay, OVO, DANA &amp; Semua m-Banking</p>
+</div>
+</label>
+<div class="hidden sm:flex items-center gap-1.5 font-fira text-xs font-bold text-primary bg-white px-2 py-1 rounded border border-primary/20">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+<span>Otomatis</span>
+</div>
+</div>
+<!-- Inside active QRIS card -->
+<div class="mt-4 pt-4 border-t border-primary/20 flex flex-col items-center">
+<div class="w-full max-w-sm bg-white rounded-xl border border-border p-5 shadow-sm flex flex-col items-center text-center">
+<!-- QR Card Top Header -->
+<div class="w-full flex items-center justify-between border-b border-border pb-2.5 mb-3">
+<div class="flex items-center gap-1">
+<span class="font-black text-sm tracking-tighter text-on-surface">QRIS</span>
+<span class="text-[10px] text-muted-foreground font-fira">Standar Pembayaran Nasional</span>
+</div>
+<span class="bg-emerald-100 text-emerald-800 text-[10px] font-fira font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>
+                    Verifikasi Otomatis &lt; 5 detik
+                  </span>
+</div>
+<!-- QR CODE GRAPHIC -->
+<div class="p-3 bg-white border border-border rounded-lg neo-shadow relative mb-3">
+<svg class="w-48 h-48 sm:w-52 sm:h-52" fill="none" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<!-- Corner Positioning Blocks -->
+<rect fill="#1c1b1b" height="28" rx="3" width="28" x="5" y="5"></rect>
+<rect fill="#ffffff" height="20" rx="2" width="20" x="9" y="9"></rect>
+<rect fill="#5ea500" height="12" width="12" x="13" y="13"></rect>
+<rect fill="#1c1b1b" height="28" rx="3" width="28" x="67" y="5"></rect>
+<rect fill="#ffffff" height="20" rx="2" width="20" x="71" y="9"></rect>
+<rect fill="#5ea500" height="12" width="12" x="75" y="13"></rect>
+<rect fill="#1c1b1b" height="28" rx="3" width="28" x="5" y="67"></rect>
+<rect fill="#ffffff" height="20" rx="2" width="20" x="9" y="71"></rect>
+<rect fill="#5ea500" height="12" width="12" x="13" y="75"></rect>
+<!-- QR Data Pattern Modules -->
+<rect fill="#1c1b1b" height="6" width="6" x="38" y="6"></rect>
+<rect fill="#5ea500" height="6" width="6" x="48" y="6"></rect>
+<rect fill="#1c1b1b" height="6" width="6" x="56" y="6"></rect>
+<rect fill="#1c1b1b" height="6" width="6" x="38" y="16"></rect>
+<rect fill="#1c1b1b" height="6" width="6" x="48" y="16"></rect>
+<rect fill="#5ea500" height="6" width="6" x="56" y="16"></rect>
+<rect fill="#1c1b1b" height="6" width="12" x="38" y="26"></rect>
+<rect fill="#1c1b1b" height="6" width="8" x="54" y="26"></rect>
+<rect fill="#1c1b1b" height="6" width="6" x="6" y="38"></rect>
+<rect fill="#1c1b1b" height="6" width="6" x="16" y="38"></rect>
+<rect fill="#5ea500" height="6" width="6" x="26" y="38"></rect>
+<rect fill="#1c1b1b" height="6" width="12" x="6" y="48"></rect>
+<rect fill="#1c1b1b" height="6" width="10" x="22" y="48"></rect>
+<rect fill="#5ea500" height="6" width="6" x="6" y="58"></rect>
+<rect fill="#1c1b1b" height="6" width="8" x="16" y="58"></rect>
+<!-- Center Logo badge -->
+<rect fill="#1c1b1b" height="28" rx="4" width="28" x="36" y="36"></rect>
+<rect fill="#ffffff" height="20" rx="2" width="20" x="40" y="40"></rect>
+<circle cx="50" cy="50" fill="#5ea500" r="7"></circle>
+<rect fill="#1c1b1b" height="6" width="6" x="68" y="38"></rect>
+<rect fill="#1c1b1b" height="6" width="16" x="78" y="38"></rect>
+<rect fill="#5ea500" height="6" width="10" x="68" y="48"></rect>
+<rect fill="#1c1b1b" height="6" width="12" x="82" y="48"></rect>
+<rect fill="#1c1b1b" height="6" width="6" x="68" y="58"></rect>
+<rect fill="#5ea500" height="6" width="14" x="78" y="58"></rect>
+<rect fill="#1c1b1b" height="6" width="8" x="38" y="68"></rect>
+<rect fill="#5ea500" height="6" width="12" x="50" y="68"></rect>
+<rect fill="#1c1b1b" height="6" width="14" x="38" y="78"></rect>
+<rect fill="#1c1b1b" height="6" width="6" x="56" y="78"></rect>
+<rect fill="#5ea500" height="6" width="6" x="38" y="88"></rect>
+<rect fill="#1c1b1b" height="6" width="14" x="48" y="88"></rect>
+<rect fill="#1c1b1b" height="6" width="6" x="68" y="68"></rect>
+<rect fill="#1c1b1b" height="6" width="16" x="78" y="68"></rect>
+<rect fill="#5ea500" height="6" width="10" x="68" y="78"></rect>
+<rect fill="#1c1b1b" height="6" width="12" x="82" y="78"></rect>
+<rect fill="#5ea500" height="6" width="12" x="68" y="88"></rect>
+<rect fill="#1c1b1b" height="6" width="10" x="84" y="88"></rect>
+</svg>
+</div>
+<div class="font-fira text-xs text-on-surface font-semibold">
+                  NMID: <span class="text-on-surface-variant font-bold">ID102008892100</span>
+</div>
+<div class="font-fira text-xs text-muted-foreground mt-0.5">
+                  Merchant: <strong class="text-on-surface">Matcha Yuk Cafe Jakarta</strong>
+</div>
+<!-- Action Button inside QR -->
+<div class="mt-3.5 flex items-center justify-center gap-2 w-full">
+<button class="w-full py-2 px-3 bg-surface-container hover:bg-surface-variant border border-border text-on-surface rounded-lg font-fira text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span>Salin Kode QR</span>
+</button>
+<button class="w-full py-2 px-3 bg-surface-container hover:bg-surface-variant border border-border text-on-surface rounded-lg font-fira text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Unduh Gambar</span>
+</button>
+</div>
+<div class="mt-3 pt-3 border-t border-border/70 text-[11px] font-fira text-muted-foreground">
+                  Powered by <span class="font-bold text-on-surface">LinkAja / DOKU POS Gateway</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: e-Wallet Instan -->
+<div class="border border-border rounded-xl p-4 bg-white hover:border-outline-variant transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-3 cursor-pointer">
+<div class="w-5 h-5 rounded-full border-2 border-border flex items-center justify-center">
+<div class="w-2.5 h-2.5 rounded-full bg-transparent"></div>
+</div>
+<div>
+<span class="font-bold text-sm text-on-surface font-sans">e-Wallet Instan (Direct App Link)</span>
+<p class="text-xs text-muted-foreground font-fira">GoPay, OVO, ShopeePay App Redirect</p>
+</div>
+</label>
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 bg-surface-container text-on-surface-variant text-[11px] font-fira font-bold rounded">GoPay</span>
+<span class="px-2 py-0.5 bg-surface-container text-on-surface-variant text-[11px] font-fira font-bold rounded">OVO</span>
+<span class="px-2 py-0.5 bg-surface-container text-on-surface-variant text-[11px] font-fira font-bold rounded">ShopeePay</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Virtual Account Bank -->
+<div class="border border-border rounded-xl p-4 bg-white hover:border-outline-variant transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-3 cursor-pointer">
+<div class="w-5 h-5 rounded-full border-2 border-border flex items-center justify-center">
+<div class="w-2.5 h-2.5 rounded-full bg-transparent"></div>
+</div>
+<div>
+<span class="font-bold text-sm text-on-surface font-sans">Virtual Account Bank (Konfirmasi Otomatis)</span>
+<p class="text-xs text-muted-foreground font-fira">BCA, Mandiri, BNI, BRI, Permata</p>
+</div>
+</label>
+<span class="text-xs font-fira text-muted-foreground">Transfer VA 24 Jam</span>
+</div>
+</div>
+<!-- Card 4: Bayar di Kasir -->
+<div class="border border-border rounded-xl p-4 bg-white hover:border-outline-variant transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-3 cursor-pointer">
+<div class="w-5 h-5 rounded-full border-2 border-border flex items-center justify-center">
+<div class="w-2.5 h-2.5 rounded-full bg-transparent"></div>
+</div>
+<div>
+<span class="font-bold text-sm text-on-surface font-sans">Bayar di Kasir (Tunai / EDC)</span>
+<p class="text-xs text-muted-foreground font-fira">Pembayaran Tunai atau Kartu Debit di Meja Kasir Depan</p>
+</div>
+</label>
+<span class="material-symbols-outlined text-muted-foreground text-[20px]">point_of_sale</span>
+</div>
+</div>
+</div>
+<!-- Catatan Khusus untuk Barista -->
+<div class="bg-white rounded-xl border border-border p-5 neo-shadow">
+<div class="flex items-center justify-between mb-2.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">edit_note</span>
+<h2 class="font-bold text-base text-on-surface font-sans">Catatan Khusus untuk Barista</h2>
+</div>
+<span class="text-[11px] font-fira text-muted-foreground">Opsional</span>
+</div>
+<textarea class="w-full bg-surface-container-low border border-border rounded-lg p-3 text-xs font-sans text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white resize-none" placeholder="Tulis catatan jika ada preferensi khusus (cth: Es dipisah di cup terpisah, jangan terlalu manis)" rows="2">Es dipisah di cup terpisah, jangan terlalu manis.</textarea>
+<div class="mt-2 flex items-center gap-1.5 text-[11px] text-muted-foreground font-fira">
+<span class="material-symbols-outlined text-[14px] text-primary">info</span>
+<span>Barista kami akan membaca catatan ini sebelum meracik minuman Matcha Anda.</span>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: Sticky Order Summary Card (35-40% Width) -->
+<aside class="lg:col-span-5 xl:col-span-4 sticky top-28 flex flex-col gap-4">
+<div class="bg-white rounded-xl border border-border p-6 neo-shadow-lg flex flex-col gap-5">
+<!-- Header -->
+<div class="flex items-center justify-between border-b border-border pb-3">
+<div>
+<h3 class="font-playfair font-bold text-lg text-on-surface">Ringkasan Pesanan</h3>
+<p class="text-xs text-muted-foreground font-fira">3 Minuman Matcha</p>
+</div>
+<span class="bg-primary/10 text-primary border border-primary/20 text-xs font-fira font-bold px-2 py-0.5 rounded">
+              Dine-in
+            </span>
+</div>
+<!-- BEVERAGE LIST (STRICTLY BEVERAGES ONLY) -->
+<div class="flex flex-col gap-3.5 divide-y divide-border/60">
+<!-- Item 1: Matcha Latte (M) -->
+<div class="pt-2 first:pt-0 flex items-start gap-3">
+<img alt="Matcha Latte" class="w-14 h-14 rounded-lg object-cover border border-border flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARYfOAZ7PeReN8iYjHh5gh10kDqE_MkSiNCWs3CHJshg5QK4yDczB0JQaQmV8By6y92rNFLbw-Qb7G-bhQK7hvc3rxBroEn1_BNFXerayH-4yl5U0h0-JRUT8tHGp-BJS4emiNQenoSC_D18T1kQ6ub77u8fmks6EdJlKwAqye3LgB_nFGUtZmnICbOQVqeUF_lPRM4-PFVfEunDQVP6HhQKlTY1xUD4VIp_N1o9ZA1CEwd3PAtmdH"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-start justify-between gap-1">
+<h4 class="font-bold text-sm text-on-surface font-sans leading-tight">Matcha Latte (M)</h4>
+<span class="font-fira font-bold text-xs text-on-surface">Rp 16.000</span>
+</div>
+<div class="text-[11px] text-muted-foreground font-fira mt-0.5 leading-snug">
+                  Qty: 1x • Normal Ice, Less Sugar<br/>
+<span class="text-primary">+ Boba Brown Sugar (Rp 2.000)</span>
+</div>
+</div>
+</div>
+<!-- Item 2: Matcha Uji Cold Brew (L) -->
+<div class="pt-3 flex items-start gap-3">
+<img alt="Matcha Uji Cold Brew" class="w-14 h-14 rounded-lg object-cover border border-border flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZJmxXeBBGBUHIzO3-LjVLMu_aFcUAoeDYRpRT1ZQTjheCNYj6BY2_au1JxWHK-e-isJi0aNtikvLbEgq7zSNrhUuUflcZrA_wlIfFdemriwD5wDKC5hKKiNL8I33U_bb4BWUHXYFH_SZxbDr2kTY1k1clTC-FiapiuYsdN5jrCmIeGC-YkYMEdm8Tpb9u7gL1TaruSDq-DvVwwwdIaNkFzlZ9H0P12HuqW1pwCpNW9ZJ2odaEks7O"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-start justify-between gap-1">
+<h4 class="font-bold text-sm text-on-surface font-sans leading-tight">Matcha Uji Cold Brew (L)</h4>
+<span class="font-fira font-bold text-xs text-on-surface">Rp 16.000</span>
+</div>
+<div class="text-[11px] text-muted-foreground font-fira mt-0.5 leading-snug">
+                  Qty: 1x • Tanpa Gula<br/>
+<span class="text-on-surface-variant font-medium">Pure Single Origin Uji</span>
+</div>
+</div>
+</div>
+<!-- Item 3: Matcha Lemon Fizz -->
+<div class="pt-3 flex items-start gap-3">
+<img alt="Matcha Lemon Fizz" class="w-14 h-14 rounded-lg object-cover border border-border flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSxweYpHdlyBFBPTFXaceDLA_C655XDDPWobipHRuZmBfYxk0kRqEiyobcHeHNJJgywDL2raUyZqqPirRk7ANbm4NRQxNPt7T7RIqVTQr0mKmFcVtUI2PlECW7L70NI3eogLwrMagnxjcRpufhPPPxz6SN1tgtH3KcyL8bBYvQnghrGZA0IOzevaS0Qh7qtQHvXaOkU6lzvO6p5UBRJf1E9FCwSC-o3pNusDOzim_3dZumOOBNWRx5"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-start justify-between gap-1">
+<h4 class="font-bold text-sm text-on-surface font-sans leading-tight">Matcha Lemon Fizz</h4>
+<span class="font-fira font-bold text-xs text-on-surface">Rp 12.000</span>
+</div>
+<div class="text-[11px] text-muted-foreground font-fira mt-0.5 leading-snug">
+                  Qty: 1x • Sparkling Soda<br/>
+<span class="text-on-surface-variant font-medium">Fresh Lemon &amp; Ceremonial Matcha</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Price Calculation Breakdown -->
+<div class="border-t border-border pt-4 flex flex-col gap-2 font-fira text-xs">
+<div class="flex justify-between text-muted-foreground">
+<span>Subtotal (3 Item)</span>
+<span class="text-on-surface font-semibold">Rp 44.000</span>
+</div>
+<div class="flex justify-between text-emerald-700">
+<span class="flex items-center gap-1">
+<span>Diskon Meja (DISKONMEJA10)</span>
+</span>
+<span class="font-bold">-Rp 4.400</span>
+</div>
+<div class="flex justify-between text-muted-foreground">
+<span>PB1 Restoran (10%)</span>
+<span class="text-on-surface font-semibold">Rp 3.960</span>
+</div>
+<!-- Total Tagihan -->
+<div class="border-t border-border/80 pt-3 mt-1 flex items-baseline justify-between">
+<div>
+<span class="font-bold text-sm text-on-surface font-sans">Total Tagihan</span>
+<span class="block text-[10px] text-muted-foreground">Sudah termasuk pajak PB1</span>
+</div>
+<span class="font-playfair font-bold text-2xl text-primary leading-none">Rp 43.560</span>
+</div>
+</div>
+<!-- Big Primary CTA Button -->
+<button class="w-full h-12 bg-primary hover:bg-surface-tint active:scale-[0.99] text-white font-sans font-bold text-sm rounded-xl neo-shadow flex items-center justify-center gap-2 transition-all shadow-md" id="btn-pay" type="button">
+<span>Bayar Sekarang via QRIS (Rp 43.560)</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<!-- Security note -->
+<div class="bg-surface-container-low p-3 rounded-lg border border-border flex items-start gap-2 text-[11px] font-sans text-muted-foreground">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">timer</span>
+<span>Pesanan akan langsung diproses barista di bar matcha segera setelah transaksi terverifikasi.</span>
+</div>
+<div class="flex items-center justify-center gap-4 text-[10px] font-fira text-muted-foreground">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-emerald-600">verified</span>
+              Garansi Keamanan POS
+            </span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">bolt</span>
+              Sinkronisasi Otomatis
+            </span>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="w-full bg-white border-t border-border mt-16">
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center font-bold text-sm">
+          M
+        </div>
+<div>
+<span class="font-playfair font-bold text-base text-on-surface">Matcha Yuk Indonesia</span>
+<p class="font-fira text-[11px] text-muted-foreground">Specialty Uji Matcha &amp; Tea Cafe • Terminal Meja 05</p>
+</div>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-4 text-xs font-fira text-muted-foreground">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">security</span>
+          PCI-DSS Compliant
+        </span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">qr_code_2</span>
+          QRIS Standar Bank Indonesia
+        </span>
+<span>•</span>
+<a class="hover:text-primary transition-colors" href="#">Bantuan Meja</a>
+</div>
+<div class="text-xs font-fira text-muted-foreground">
+        © 2025 Matcha Yuk Specialty Cafe. All rights reserved.
+      </div>
+</div>
+</footer>
+<script>
+    // Countdown timer simulation for checkout page
+    (function initCheckoutTimer() {
+      let seconds = 14 * 60 + 20;
+      const timerDisplay = document.getElementById('header-timer');
+      
+      const countdown = setInterval(() => {
+        if (seconds <= 0) {
+          clearInterval(countdown);
+          if (timerDisplay) timerDisplay.textContent = '00:00';
+          return;
+        }
+        seconds--;
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        if (timerDisplay) {
+          timerDisplay.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+      }, 1000);
+
+      // Payment CTA interaction
+      const payBtn = document.getElementById('btn-pay');
+      if (payBtn) {
+        payBtn.addEventListener('click', () => {
+          payBtn.innerHTML = `
+            <span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+            <span>Memverifikasi QRIS...</span>
+          `;
+          setTimeout(() => {
+            alert('Pembayaran QRIS Berhasil Diverifikasi! Struk dikirim ke WhatsApp Budi Santoso (0812-8921-8901). Barista sedang menyiapkan 3 minuman Anda.');
+            payBtn.innerHTML = `
+              <span class="material-symbols-outlined text-[18px]">check_circle</span>
+              <span>Pembayaran Berhasil!</span>
+            `;
+            payBtn.classList.replace('bg-primary', 'bg-black');
+          }, 1000);
+        });
+      }
+    })();
+  </script>
+</body></html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_stack" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Cantora+One&amp;family=Fira+Code:wght@400;500;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-surface": "#1c1b1b", "inverse-surface": "#313030", "sidebar-foreground": "#0a0a0a", "primary-fixed": "#aaf85c", "outline-variant": "#c1cab2", "destructive-foreground": "#fef2f2", "surface-variant": "#e5e2e1", "sidebar-primary-foreground": "#fafafa", "surface-bright": "#fcf8f8", "surface": "#fcf8f8", "primary": "#5ea500", "inverse-primary": "#8fdb42", "sidebar-primary": "#171717", "destructive": "#e7000b", "on-secondary-container": "#5f6161", "primary-container": "#5ea500", "on-error": "#ffffff", "on-surface-variant": "#414937", "tertiary-container": "#5491ff", "accent": "#f5f5f5", "sidebar-accent-foreground": "#171717", "secondary": "#f5f5f5", "on-tertiary-container": "#002a62", "sidebar-border": "#e5e5e5", "surface-dim": "#dcd9d9", "surface-tint": "#3b6a00", "primary-foreground": "#fafafa", "on-secondary-fixed": "#1a1c1c", "tertiary-fixed": "#d8e2ff", "surface-container-highest": "#e5e2e1", "surface-container-high": "#ebe7e7", "accent-foreground": "#171717", "on-primary-container": "#193200", "card-foreground": "#0a0a0a", "on-primary": "#ffffff", "secondary-fixed": "#e2e2e2", "outline": "#717a66", "background": "#ffffff", "ring": "#a1a1a1", "sidebar-ring": "#a1a1a1", "chart-2": "#3a81f6", "error": "#ba1a1a", "on-tertiary": "#ffffff", "sidebar-accent": "#f5f5f5", "on-background": "#1c1b1b", "surface-container": "#f0edec", "surface-container-lowest": "#ffffff", "border": "#e5e5e5", "foreground": "#0a0a0a", "secondary-container": "#dcdddd", "input": "#e5e5e5", "surface-container-low": "#f6f3f2", "on-primary-fixed-variant": "#2b5000", "on-secondary-fixed-variant": "#454747", "muted-foreground": "#737373", "error-container": "#ffdad6", "on-secondary": "#ffffff", "popover-foreground": "#0a0a0a", "on-tertiary-fixed-variant": "#004395", "chart-3": "#2563ef", "secondary-fixed-dim": "#c6c6c7", "chart-4": "#1a4eda", "inverse-on-surface": "#f3f0ef", "card": "#ffffff", "tertiary-fixed-dim": "#aec6ff", "on-primary-fixed": "#0e2000", "primary-fixed-dim": "#8fdb42", "muted": "#f5f5f5", "tertiary": "#005ac3", "popover": "#ffffff", "chart-5": "#1f3fad", "sidebar": "#fafafa", "on-tertiary-fixed": "#001a42", "on-error-container": "#93000a", "secondary-foreground": "#171717", "chart-1": "#91c5ff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-lg": "1.5rem", "gutter": "1rem", "space-xs": "0.25rem", "margin": "1rem", "gutter-desktop": "1.5rem", "margin-desktop": "2rem", "space-sm": "0.5rem", "space-xl": "2rem", "space-md": "1rem" }, fontFamily: { "code-snippet": ["Fira Code"], "headline-lg": ["Playfair Display"], "display-hero": ["Playfair Display"], "display-hero-mobile": ["Playfair Display"], "label-sm": ["Fira Code"], "body-sm": ["Cantora One"], "headline-lg-mobile": ["Playfair Display"], "label-md": ["Fira Code"], "headline-md": ["Playfair Display"], "title-md": ["Cantora One"], "body-md": ["Cantora One"], "body-lg": ["Cantora One"], "headline-sm": ["Playfair Display"], "title-lg": ["Cantora One"], "price-tag": ["Fira Code"] }, fontSize: { "code-snippet": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }], "display-hero": ["48px", { "lineHeight": "56px", "fontWeight": "700" }], "display-hero-mobile": ["34px", { "lineHeight": "42px", "fontWeight": "700" }], "label-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "headline-lg-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }], "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "500" }], "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }], "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }], "title-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }], "price-tag": ["15px", { "lineHeight": "20px", "letterSpacing": "-0.02em", "fontWeight": "700" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style></head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><button aria-label="Kembali" class="w-11 h-11 flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container active:translate-x-[-1px] active:translate-y-[1px] transition-all" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[22px]">arrow_back</span></button><div class="flex flex-col"><div class="flex items-center gap-space-xs"><h1 class="font-headline-sm text-headline-sm text-on-surface leading-none tracking-tight">Pembayaran</h1><span class="material-symbols-outlined text-primary text-[18px]" title="Transaksi Aman Terverifikasi">verified_user</span></div><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Matcha Yuk • Order #MY-882</span></div></div><div class="flex items-center gap-space-sm"><div class="h-9 px-space-sm bg-surface-container-high flex items-center gap-space-xs"><span class="material-symbols-outlined text-outline text-[16px]">table_restaurant</span><span class="font-label-md text-label-md text-on-surface font-bold">MEJA 05</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col flex-1 relative w-full pt-16 bg-surface pb-safe"><div class="flex flex-col w-full px-gutter pb-28 space-y-space-md">
+<!-- Countdown Urgency Bar -->
+<div class="mt-space-sm bg-error-container text-on-error-container p-space-sm flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-error text-[20px] animate-pulse">timer</span>
+<span class="font-body-md text-body-md text-error font-bold">Selesaikan pesanan dalam</span>
+</div>
+<div class="flex items-center gap-1 bg-surface px-space-sm py-0.5 shadow-sm">
+<span class="font-price-tag text-price-tag text-error font-bold tracking-wider" id="countdown-timer">13:51</span>
+</div>
+</div>
+<!-- Dine-in Spot Status Banner -->
+<div class="bg-surface-container p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-fixed text-[24px]">soup_kitchen</span>
+</div>
+<div class="flex flex-col truncate">
+<span class="font-title-md text-title-md text-on-surface font-bold leading-tight">Dine-in: Meja 05</span>
+<span class="font-code-snippet text-code-snippet text-on-surface-variant">ID: #MY-88219 • Dibuat 11:42 WIB</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm bg-primary text-on-primary px-space-xs py-1 tracking-wide font-bold shrink-0">MENUNGGU BAYAR</span>
+</div>
+<!-- Collapsible Order Summary Accordion -->
+<div class="bg-surface-container-lowest p-space-md shadow flex flex-col space-y-space-sm">
+<button class="flex items-center justify-between w-full text-left" id="summary-toggle-btn" onclick="toggleOrderSummary()" type="button"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary text-[20px]">receipt_long</span><span class="font-headline-sm text-headline-sm text-on-surface">Rincian Menu (2 Minuman)</span></div><div class="flex items-center gap-space-xs"><span class="font-code-snippet text-code-snippet text-primary font-bold">Rp 29.700</span><span class="material-symbols-outlined text-on-surface-variant transition-transform duration-200" id="accordion-chevron">expand_less</span></div></button>
+<div class="flex flex-col space-y-space-sm pt-space-xs" id="summary-content"><!-- Item 1: Matcha Latte -->
+<div class="flex items-start justify-between gap-space-sm pb-space-sm bg-surface-container-low p-space-sm">
+  <div class="flex items-start gap-space-sm min-w-0">
+    <div class="w-12 h-12 bg-surface-container-highest shrink-0 overflow-hidden">
+      <img class="w-full h-full object-cover" data-alt="Iced Japanese matcha latte with glossy tapioca pearls boba in a minimalist transparent cup, high resolution beverage photography, bright daylight cafe lighting, refreshing green aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt-wL6ChMUFPIhaqb80Ta3ShDrkuB-HChqrFrK-qje5E1QvCfM5CrmoXRpU6gg-Fyd_2kfLfobK3TsffKa7vQY523UYGHi9jvoFx-6Yod4sP8-4T_79kxcAe_T0I-rSRcoiVBy49FfNbQKioTM6ZinCCtTAg24xa-XrnhwA9MJhm8jxvk26rgBkFQWJZu9WsSc_7LUIOsaHxPLIVGngbppFch8dFY6I9PhX4FaT7VDWtz0-0wDzvyA">
+    </div>
+    <div class="flex flex-col min-w-0">
+      <span class="font-title-md text-title-md text-on-surface font-bold truncate">1x Matcha Latte (Medium)</span>
+      <span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Less Ice (50%), Sugar 50%, Boba Brown Sugar</span>
+    </div>
+  </div>
+  <span class="font-price-tag text-price-tag text-on-surface shrink-0">Rp 16.000</span>
+</div>
+<!-- Item 2: Matcha Uji Cold Brew -->
+<div class="flex items-start justify-between gap-space-sm pb-space-sm bg-surface-container-low p-space-sm">
+  <div class="flex items-start gap-space-sm min-w-0">
+    <div class="w-12 h-12 bg-surface-container-highest shrink-0 overflow-hidden flex items-center justify-center bg-primary/10 text-primary">
+      <span class="material-symbols-outlined text-[28px]">local_cafe</span>
+    </div>
+    <div class="flex flex-col min-w-0">
+      <span class="font-title-md text-title-md text-on-surface font-bold truncate">1x Matcha Uji Cold Brew</span>
+      <span class="font-body-sm text-body-sm text-on-surface-variant">Pure Single Origin Ceremonial Uji, No Sugar, Iced</span>
+    </div>
+  </div>
+  <span class="font-price-tag text-price-tag text-on-surface shrink-0">Rp 15.000</span>
+</div>
+<!-- Cost Breakdown -->
+<div class="bg-surface-container p-space-sm space-y-space-xs text-on-surface">
+  <div class="flex justify-between font-body-sm text-body-sm">
+    <span class="text-on-surface-variant">Subtotal Pesanan</span>
+    <span class="font-label-md text-label-md">Rp 31.000</span>
+  </div>
+  <div class="flex justify-between font-body-sm text-body-sm text-primary">
+    <span class="flex items-center gap-1">
+      <span class="material-symbols-outlined text-[16px]">sell</span> Diskon Promo QR (10%)
+    </span>
+    <span class="font-label-md text-label-md font-bold">-Rp 3.100</span>
+  </div>
+  <div class="flex justify-between font-body-sm text-body-sm">
+    <span class="text-on-surface-variant">Pajak Restoran PB1 (10%)</span>
+    <span class="font-label-md text-label-md">Rp 2.790</span>
+  </div>
+  <div class="pt-space-xs flex justify-between items-center bg-surface-container-highest px-space-xs py-1">
+    <span class="font-title-md text-title-md text-on-surface font-bold">Total Tagihan</span>
+    <span class="font-headline-sm text-headline-sm text-primary font-bold">Rp 30.690</span>
+  </div>
+</div></div>
+</div>
+<!-- Customer Contact / Receipt Delivery -->
+<div class="bg-surface-container-lowest p-space-md shadow flex flex-col space-y-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">Penerima Struk Digital</span>
+<span class="font-label-sm text-label-sm text-primary font-bold uppercase tracking-wide">Otomatis WhatsApp</span>
+</div>
+<div class="flex items-center gap-space-sm pt-space-xs">
+<div class="w-10 h-10 bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[22px]">chat</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="font-title-md text-title-md text-on-surface font-bold">Budi Santoso</span>
+<span class="font-code-snippet text-code-snippet text-on-surface-variant tracking-wider">0812-8921-8901</span>
+</div>
+<button class="px-space-sm h-8 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm text-label-sm active:translate-y-[1px]" type="button">
+        UBAH
+      </button>
+</div>
+</div>
+<!-- Voucher & Promo Code Section -->
+<div class="bg-surface-container-lowest p-space-md shadow flex flex-col space-y-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">confirmation_number</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Voucher &amp; Promo</span>
+</div>
+<div class="flex gap-space-xs">
+<div class="relative flex-1">
+<input class="w-full h-11 bg-surface-container-low px-space-sm font-label-md text-label-md text-on-surface uppercase focus:outline-none focus:bg-surface" id="voucher-input" placeholder="Masukkan kode promo" type="text" value="DISKONMEJA10">
+</div>
+<button class="h-11 px-space-md bg-inverse-surface text-inverse-on-surface font-title-md text-title-md hover:bg-on-surface active:translate-x-[1px] active:translate-y-[1px]" type="button">
+        GUNAKAN
+      </button>
+</div>
+<!-- Active Promo Tag -->
+<div class="flex items-center justify-between bg-primary/10 p-space-xs px-space-sm"><div class="flex items-center gap-space-xs text-primary font-body-sm text-body-sm"><span class="material-symbols-outlined text-[18px]">verified</span><span class="">Kode <strong>DISKONMEJA10</strong> diterapkan: Hemat <strong>Rp 3.100</strong></span></div><button aria-label="Hapus promo" class="text-error font-label-sm text-label-sm hover:underline" type="button">Hapus</button></div>
+</div>
+<!-- Payment Methods List -->
+<div class="flex flex-col space-y-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">Metode Pembayaran</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[14px]">lock</span> Terenkripsi 256-bit
+      </span>
+</div>
+<!-- Option 1: QRIS Instant (Selected) -->
+<div class="bg-surface-container-lowest shadow flex flex-col p-space-md cursor-pointer transition-all" id="method-qris">
+<label class="flex items-start justify-between cursor-pointer w-full" onclick="selectPaymentMethod('qris')">
+<div class="flex items-start gap-space-sm min-w-0">
+<div class="w-10 h-10 bg-primary flex items-center justify-center shrink-0 text-on-primary">
+<span class="material-symbols-outlined text-[24px]">qr_code_2</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-title-lg text-title-lg text-on-surface font-bold">QRIS (Semua Pembayaran)</span>
+<span class="bg-primary text-on-primary font-label-sm text-label-sm px-1.5 py-0.5 font-bold">REKOMENDASI</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">BCA, Mandiri, GoPay, ShopeePay, OVO, DANA</span>
+</div>
+</div>
+<div class="w-5 h-5 bg-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary text-[16px]">check</span>
+</div>
+</label>
+<!-- Active QRIS Preview Drawer -->
+<div class="mt-space-md pt-space-md bg-surface-container-low p-space-md flex flex-col items-center space-y-space-sm" id="qris-expanded-panel">
+<div class="flex items-center justify-between w-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold tracking-wider">Dynamic QRIS Merchant</span>
+<span class="bg-surface-container-high text-on-surface font-code-snippet text-code-snippet px-2 py-0.5">NMID: ID102008892100</span>
+</div>
+<!-- Stylized Neo-brutalist QR Frame -->
+<div class="bg-surface p-space-sm shadow flex flex-col items-center relative">
+<!-- Dynamic QR Mockup with SVG -->
+<svg class="w-48 h-48 text-on-surface" fill="currentColor" viewBox="0 0 100 100">
+<!-- Corner Finder 1 -->
+<rect fill="currentColor" height="26" width="26" x="5" y="5"></rect>
+<rect fill="white" height="20" width="20" x="8" y="8"></rect>
+<rect fill="currentColor" height="14" width="14" x="11" y="11"></rect>
+<!-- Corner Finder 2 -->
+<rect fill="currentColor" height="26" width="26" x="69" y="5"></rect>
+<rect fill="white" height="20" width="20" x="72" y="8"></rect>
+<rect fill="currentColor" height="14" width="14" x="75" y="11"></rect>
+<!-- Corner Finder 3 -->
+<rect fill="currentColor" height="26" width="26" x="5" y="69"></rect>
+<rect fill="white" height="20" width="20" x="8" y="72"></rect>
+<rect fill="currentColor" height="14" width="14" x="11" y="75"></rect>
+<!-- Data Grid Matrix Bits -->
+<rect height="5" width="5" x="36" y="6"></rect>
+<rect height="5" width="5" x="45" y="12"></rect>
+<rect height="7" width="7" x="55" y="6"></rect>
+<rect height="6" width="6" x="36" y="18"></rect>
+<rect height="5" width="5" x="48" y="24"></rect>
+<rect height="6" width="6" x="6" y="36"></rect>
+<rect height="6" width="6" x="18" y="42"></rect>
+<rect height="5" width="5" x="28" y="36"></rect>
+<!-- Center Branded Logo Shield -->
+<rect fill="white" height="24" width="24" x="38" y="38"></rect>
+<rect fill="#5ea500" height="20" width="20" x="40" y="40"></rect>
+<path d="M44 48 L50 54 L57 44" fill="none" stroke="white" stroke-linecap="square" stroke-width="2.5"></path>
+<!-- Lower Bits -->
+<rect height="6" width="6" x="38" y="68"></rect>
+<rect height="7" width="7" x="48" y="74"></rect>
+<rect height="6" width="6" x="60" y="68"></rect>
+<rect height="5" width="8" x="70" y="38"></rect>
+<rect height="6" width="6" x="82" y="46"></rect>
+<rect height="6" width="7" x="72" y="58"></rect>
+<rect height="8" width="8" x="85" y="70"></rect>
+<rect height="6" width="6" x="70" y="82"></rect>
+<rect height="5" width="6" x="40" y="88"></rect>
+</svg>
+<!-- Central Pulsing Verification Toast -->
+<div class="mt-space-xs flex items-center gap-1.5 bg-primary/10 px-space-sm py-1">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="font-label-sm text-label-sm text-primary font-bold">Verifikasi Otomatis &lt; 5 detik</span>
+</div>
+</div>
+<div class="flex items-center justify-between w-full text-on-surface-variant font-label-sm text-label-sm">
+<span class="">Powered by <strong>LinkAja / DOKU POS</strong></span>
+<button class="text-primary font-bold flex items-center gap-0.5 hover:underline" onclick="copyQRISPayload()" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span> Salin Kode QR
+          </button>
+</div>
+</div>
+</div>
+<!-- Option 2: Dompet Digital (e-Wallet Direct) -->
+<div class="bg-surface-container-lowest shadow flex flex-col p-space-md cursor-pointer hover:bg-surface-container-low transition-all" id="method-ewallet" onclick="selectPaymentMethod('ewallet')">
+<div class="flex items-center justify-between w-full">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 bg-surface-container flex items-center justify-center shrink-0 text-on-surface">
+<span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-lg text-title-lg text-on-surface font-bold">e-Wallet Instan</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">GoPay, OVO, ShopeePay App Redirect</span>
+</div>
+</div>
+<div class="w-5 h-5 bg-surface-container-high flex items-center justify-center shrink-0" id="radio-ewallet"></div>
+</div>
+</div>
+<!-- Option 3: Virtual Account Bank -->
+<div class="bg-surface-container-lowest shadow flex flex-col p-space-md cursor-pointer hover:bg-surface-container-low transition-all" id="method-va" onclick="selectPaymentMethod('va')">
+<div class="flex items-center justify-between w-full">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 bg-surface-container flex items-center justify-center shrink-0 text-on-surface">
+<span class="material-symbols-outlined text-[24px]">account_balance</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-lg text-title-lg text-on-surface font-bold">Virtual Account Bank</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">BCA, Mandiri, BNI, BRI, Permata</span>
+</div>
+</div>
+<div class="w-5 h-5 bg-surface-container-high flex items-center justify-center shrink-0" id="radio-va"></div>
+</div>
+</div>
+<!-- Option 4: Bayar di Kasir (Cash / Terminal) -->
+<div class="bg-surface-container-lowest shadow flex flex-col p-space-md cursor-pointer hover:bg-surface-container-low transition-all" id="method-cashier" onclick="selectPaymentMethod('cashier')">
+<div class="flex items-center justify-between w-full">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 bg-surface-container flex items-center justify-center shrink-0 text-on-surface">
+<span class="material-symbols-outlined text-[24px]">payments</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-lg text-title-lg text-on-surface font-bold">Bayar di Kasir</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tunai, Kartu Debit/Kredit EDC di Kasir Depan</span>
+</div>
+</div>
+<div class="w-5 h-5 bg-surface-container-high flex items-center justify-center shrink-0" id="radio-cashier"></div>
+</div>
+</div>
+</div>
+<!-- Safety Policy Footnote -->
+<div class="bg-surface-container-low p-space-sm flex items-center gap-space-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[20px]">shield</span>
+<p class="font-body-sm text-body-sm leading-relaxed">
+      Pesanan akan langsung diproses barista di bar matcha segera setelah transaksi terverifikasi.
+    </p>
+</div>
+</div>
+<!-- Sticky Bottom Action Dock -->
+<aside class="fixed bottom-0 inset-x-0 bg-surface/95 backdrop-blur-md shadow-xl p-gutter z-40 pb-safe">
+<div class="max-w-md mx-auto flex flex-col space-y-space-xs">
+<!-- Quick Pricing Summary Toggle Header -->
+<div class="flex items-center justify-between"><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total Tagihan Final</span><div class="flex items-center gap-1.5"><span class="font-headline-sm text-headline-sm text-on-surface font-bold">Rp 30.690</span><span class="font-label-sm text-label-sm text-primary font-bold bg-primary/10 px-1">Hemat Rp 3.100</span></div></div><button class="flex items-center gap-0.5 text-primary font-body-sm text-body-sm font-bold hover:underline" onclick="toggleOrderSummary()" type="button">Lihat Rincian <span class="material-symbols-outlined text-[16px]">keyboard_arrow_up</span></button></div>
+<!-- Big Tactical Primary CTA -->
+<button class="w-full h-12 bg-primary text-on-primary font-title-lg text-title-lg font-bold flex items-center justify-center gap-space-sm shadow active:translate-x-[2px] active:translate-y-[2px] transition-all" id="pay-submit-btn" onclick="executePaymentFlow()" type="button">
+<span class="material-symbols-outlined text-[22px]">check_circle</span>
+<span id="cta-button-text" class="">Bayar Sekarang via QRIS (Rp 30.690)</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</aside>
+<script>
+  // Countdown Timer Logic
+  (function initTimer() {
+    let duration = 14 * 60 + 59;
+    const timerDisplay = document.getElementById('countdown-timer');
+    if (!timerDisplay) return;
+
+    const interval = setInterval(() => {
+      const minutes = Math.floor(duration / 60);
+      const seconds = duration % 60;
+      timerDisplay.textContent = 
+        (minutes < 10 ? '0' : '') + minutes + ':' + 
+        (seconds < 10 ? '0' : '') + seconds;
+
+      if (--duration < 0) {
+        clearInterval(interval);
+        timerDisplay.textContent = '00:00';
+      }
+    }, 1000);
+  })();
+
+  // Accordion Toggle
+  function toggleOrderSummary() {
+    const content = document.getElementById('summary-content');
+    const chevron = document.getElementById('accordion-chevron');
+    if (!content || !chevron) return;
+
+    if (content.classList.contains('hidden')) {
+      content.classList.remove('hidden');
+      chevron.textContent = 'expand_less';
+    } else {
+      content.classList.add('hidden');
+      chevron.textContent = 'expand_more';
+    }
+  }
+
+  // Payment Selection Switcher
+  let selectedMethod = 'qris';
+
+  function selectPaymentMethod(method) {
+    selectedMethod = method;
+    const qrisPanel = document.getElementById('qris-expanded-panel');
+    const ctaText = document.getElementById('cta-button-text');
+
+    const methods = ['qris', 'ewallet', 'va', 'cashier'];
+    methods.forEach((m) => {
+      const el = document.getElementById('method-' + m);
+      const radio = document.getElementById('radio-' + m);
+      if (m === method) {
+        if (el) {
+          el.classList.add('bg-surface-container-low');
+          el.classList.remove('bg-surface-container-lowest');
+        }
+        if (radio) {
+          radio.className = 'w-5 h-5 bg-primary flex items-center justify-center shrink-0 text-on-primary';
+          radio.innerHTML = '<span class="material-symbols-outlined text-on-primary text-[16px]">check</span>';
+        }
+      } else {
+        if (el) {
+          el.classList.remove('bg-surface-container-low');
+          el.classList.add('bg-surface-container-lowest');
+        }
+        if (radio) {
+          radio.className = 'w-5 h-5 bg-surface-container-high flex items-center justify-center shrink-0';
+          radio.innerHTML = '';
+        }
+      }
+    });
+
+    if (method === 'qris') {
+      if (qrisPanel) qrisPanel.classList.remove('hidden');
+      if (ctaText) ctaText.textContent = 'Bayar Sekarang via QRIS (Rp 33.660)';
+    } else {
+      if (qrisPanel) qrisPanel.classList.add('hidden');
+      if (ctaText) {
+        if (method === 'ewallet') ctaText.textContent = 'Lanjut ke e-Wallet (Rp 33.660)';
+        if (method === 'va') ctaText.textContent = 'Dapatkan Nomor VA (Rp 33.660)';
+        if (method === 'cashier') ctaText.textContent = 'Konfirmasi Bayar di Kasir (Rp 33.660)';
+      }
+    }
+  }
+
+  function copyQRISPayload() {
+    navigator.clipboard?.writeText('00020101021226670016ID.LINKAJA.WWW01189360088219000000005204581253033605407336605802ID5910MATCHA YUK6007JAKARTA630489A1');
+    alert('Kode QRIS berhasil disalin ke clipboard');
+  }
+
+  function executePaymentFlow() {
+    const btn = document.getElementById('pay-submit-btn');
+    if (btn) {
+      btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">sync</span><span>Memproses Transaksi...</span>';
+      setTimeout(() => {
+        alert('Simulasi Pembayaran Berhasil! Pesanan #MY-88219 sedang diracik barista.');
+        btn.innerHTML = '<span class="material-symbols-outlined text-[20px]">check_circle</span><span>Pembayaran Berhasil!</span>';
+        btn.classList.remove('bg-primary');
+        btn.classList.add('bg-on-surface');
+      }, 1500);
+    }
+  }
+</script></main>
+
+</body></html>
