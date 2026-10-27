@@ -3,18 +3,19 @@ import Link from "next/link"
 import { ArrowUpRight, Package, ReceiptText } from "lucide-react"
 import { MenuCatalog } from "@/components/dashboard/menu-catalog"
 import { prisma } from "@/lib/prisma/prisma"
+import { requireAdmin } from "@/lib/auth/permissions"
 
 export const metadata: Metadata = {
   title: "Dashboard Merchant | Matcha Yuk",
   description: "Ringkasan katalog menu dari database.",
 }
 
-
 export default async function DashboardPage() {
+  await requireAdmin()
   const [totalProducts, publishedProducts, categoryCount, products] =
-  await Promise.all([
-    prisma.produk.count(),
-    prisma.produk.count({ where: { published: true } }),
+    await Promise.all([
+      prisma.produk.count(),
+      prisma.produk.count({ where: { published: true } }),
       prisma.category.count(),
       prisma.produk.findMany({
         select: {
@@ -49,17 +50,17 @@ export default async function DashboardPage() {
       <section
         aria-label="Ringkasan katalog"
         className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
-        >
+      >
         <StatCard
           label="Total menu"
           value={totalProducts}
           detail="Seluruh produk dalam katalog"
-          />
+        />
         <StatCard
           label="Menu terbit"
           value={publishedProducts}
           detail="Produk dengan status terbit"
-          />
+        />
         <StatCard
           label="Belum terbit"
           value={totalProducts - publishedProducts}
@@ -97,12 +98,12 @@ export default async function DashboardPage() {
           <ReceiptText className="size-6 text-primary" aria-hidden="true" />
           <h2 className="mt-4 font-serif text-xl font-bold">Order Masuk</h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Database belum menyimpan transaksi pesanan.
+            Lihat pesanan masuk dan perbarui proses pesanan yang sudah lunas.
           </p>
           <Link
             href="/dashboard/orders"
             className="mt-5 inline-flex items-center gap-2 font-semibold text-primary hover:underline"
-            >
+          >
             Buka halaman order
             <ArrowUpRight className="size-4" aria-hidden="true" />
           </Link>

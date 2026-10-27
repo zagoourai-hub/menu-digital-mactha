@@ -1,10 +1,5 @@
-import { AuthLayout } from "@/components/auth/auth-layout"
-import { RegisterForm } from "@/components/auth/register-form"
+import { redirect } from "next/navigation"
 
 export default function RegisterPage() {
-  return (
-    <AuthLayout mode="register">
-      <RegisterForm />
-    </AuthLayout>
-  )
+  redirect("/login")
 }

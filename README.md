@@ -23,19 +23,35 @@ pnpm dev
 
 Server development memakai port 3001. Database SQLite lokal tidak disertakan.
 
+## Pemilik dan karyawan
+
+- `admin`: pemilik kedai, mengelola produk, membuat akun karyawan, dan memproses pesanan.
+- `user`: karyawan, memproses pesanan lunas, mencatat keuangan, dan mengunduh laporan.
+- Registrasi publik ditutup. Pemilik membuat akun melalui **Dashboard → Karyawan**.
+
+Lihat [akses dashboard dan proses pesanan](docs/dashboard-access.md).
+
+Menu **Keuangan** mencatat penjualan langsung, pemasukan lain, dan pengeluaran.
+Penjualan online baru dihitung otomatis setelah pembayaran terverifikasi. Pemilik
+dapat mengoreksi/membatalkan catatan dengan riwayat. Kedua role dapat mengunduh PDF.
+Lihat [panduan keuangan](docs/finance.md) untuk perhitungan dan batas laporannya.
+
 ## Pembayaran dan hasil pengujian
 
 Lihat [panduan payment](docs/payment.md) dan
 [laporan bug pembayaran](docs/bug-reports/2026-10-26-payment.md).
-Konfigurasi lokal payment belum lengkap pada pengujian terakhir; pembayaran serta
-webhook sandbox belum terverifikasi end-to-end. Perbaikannya ditunda sesuai
-keputusan pengguna. Tidak ada deployment produksi yang dilakukan.
+URL aplikasi lokal dan validasi konfigurasi payment sudah diperbaiki. Checkout
+Snap, simulasi QRIS sandbox, serta perubahan order ke PAID melalui webhook otomatis
+ngrok sudah diuji. Lihat [setup ngrok](docs/ngrok.md) untuk menjalankan tunnel dan
+memperbarui URL callback. Tidak ada deployment produksi yang dilakukan.
 
 ## Validasi
 
 ```powershell
 cd frontend
-node --import tsx --test tests/payment.test.mjs
+node --import tsx --test tests/payment.test.mjs tests/order-store.test.mjs
+node --experimental-test-module-mocks --import tsx --test tests/dashboard-access.test.mjs
+node --experimental-test-module-mocks --import tsx --test tests/finance.test.mjs
 pnpm lint
 pnpm typecheck
 pnpm build

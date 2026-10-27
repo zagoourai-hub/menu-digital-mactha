@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
 import { z } from "zod"
 import { useEffect } from "react"
+import { useOrderStore } from "@/lib/stores/order.store"
 
 const labels = {
   PENDING_PAYMENT: "Menunggu konfirmasi pembayaran",
@@ -15,6 +16,8 @@ const labels = {
 }
 
 export function PaymentStatus({ orderId }: { orderId: string }) {
+  const checkout = useOrderStore((state) => state.checkouts[orderId])
+  const completeCheckout = useOrderStore((state) => state.completeCheckout)
   const query = useQuery({
     queryKey: ["payment", orderId],
     queryFn: async () => {
@@ -44,6 +47,7 @@ export function PaymentStatus({ orderId }: { orderId: string }) {
   })
 
   useEffect(() => {
+    if (query.data?.status === "PAID" && checkout) completeCheckout(orderId)
     if (
       query.data?.status === "PAID" &&
       sessionStorage.getItem("matcha-checkout-order") === orderId
@@ -51,7 +55,7 @@ export function PaymentStatus({ orderId }: { orderId: string }) {
       sessionStorage.removeItem("matcha-checkout")
       sessionStorage.removeItem("matcha-checkout-order")
     }
-  }, [orderId, query.data?.status])
+  }, [orderId, query.data?.status, checkout, completeCheckout])
 
   return (
     <main className="mx-auto min-h-screen max-w-2xl px-5 py-16">

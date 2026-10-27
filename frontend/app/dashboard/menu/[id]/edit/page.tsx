@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { DeleteProductButton } from "@/components/dashboard/delete-product-button"
 import { ProductForm } from "@/components/dashboard/product-form"
 import { prisma } from "@/lib/prisma/prisma"
+import { requireAdmin } from "@/lib/auth/permissions"
 import { deleteProduct, updateProduct } from "../../actions"
 
 export const metadata: Metadata = {
@@ -14,6 +15,7 @@ export default async function EditProductPage({
 }: {
   params: Promise<{ id: string }>
 }) {
+  await requireAdmin()
   const { id: rawId } = await params
   const id = Number(rawId)
   if (!Number.isSafeInteger(id) || id < 1) notFound()

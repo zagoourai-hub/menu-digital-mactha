@@ -1,14 +1,16 @@
 import type { Metadata } from "next"
 import { CreateProductForm } from "@/components/dashboard/create-product-form"
 import { prisma } from "@/lib/prisma/prisma"
+import { requireAdmin } from "@/lib/auth/permissions"
 
 export const metadata: Metadata = {
   title: "Tambah Menu | Matcha Yuk",
 }
 
 export default async function CreateProductPage() {
+  await requireAdmin()
   const categories = await prisma.category.findMany({
-    select: { id: true, name: true,  },
+    select: { id: true, name: true },
     orderBy: { sortOrder: "asc" },
   })
 

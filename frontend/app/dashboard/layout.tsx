@@ -1,17 +1,15 @@
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
 import { DashboardShell } from "@/components/dashboard/dashboard-shell"
-import { auth } from "@/lib/auth/auth"
+import { requireStaff } from "@/lib/auth/permissions"
 
 export default async function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session) redirect("/login")
+  const session = await requireStaff()
 
   return (
     <DashboardShell
       user={{ name: session.user.name, email: session.user.email }}
+      isAdmin={session.user.role === "admin"}
     >
       {children}
     </DashboardShell>

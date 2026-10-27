@@ -39,6 +39,7 @@ model User {
   namaKedai     String?
   kota          String?
   phone         String?
+  role          String    @default("user")
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
@@ -46,20 +47,25 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+  banned     Boolean?  @default(false)
+  banReason  String?
+  banExpires DateTime?
+
   @@unique([email])
   @@map("user")
 }
 
 model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id
+  expiresAt      DateTime
+  token          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  impersonatedBy String?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@index([userId])
@@ -99,34 +105,37 @@ model Verification {
 }
 
 model Order {
-  id            String         @id
-  checkoutKey   String         @unique
-  requestHash   String
-  customerName  String
-  phone         String
-  note          String
-  method        String
-  total         Int
-  status        String         @default("PENDING_PAYMENT")
-  snapToken     String?
-  redirectUrl   String?
-  transactionId String?        @unique
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  items         OrderItem[]
-  events        PaymentEvent[]
+  id                 String         @id
+  checkoutKey        String         @unique
+  requestHash        String
+  customerName       String
+  phone              String
+  note               String
+  method             String
+  total              Int
+  status             String         @default("PENDING_PAYMENT")
+  fulfillmentStatus  String         @default("NEW")
+  paymentEnvironment String?
+  snapToken          String?
+  redirectUrl        String?
+  transactionId      String?        @unique
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  items              OrderItem[]
+  events             PaymentEvent[]
 
   @@index([createdAt])
 }
 
 model OrderItem {
-  id        Int    @id @default(autoincrement())
-  orderId   String
-  productId Int
-  name      String
-  price     Int
-  quantity  Int
-  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id          Int     @id @default(autoincrement())
+  orderId     String
+  productId   Int
+  name        String
+  price       Int
+  quantity    Int
+  countsAsCup Boolean @default(true)
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([orderId])
 }
@@ -140,4 +149,40 @@ model PaymentEvent {
   order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([orderId])
+  @@index([status, createdAt])
+}
+
+model CashEntry {
+  id            String           @id
+  environment   String
+  kind          String
+  occurredOn    String
+  amount        Int
+  unitPrice     Int?
+  cups          Int              @default(0)
+  category      String
+  description   String
+  createdById   String
+  createdByName String
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  version       Int              @default(1)
+  cancelled     Boolean          @default(false)
+  audits        CashEntryAudit[]
+
+  @@index([environment, occurredOn])
+}
+
+model CashEntryAudit {
+  id         String    @id @default(cuid())
+  entryId    String
+  actorId    String
+  actorName  String
+  reason     String
+  beforeJson String
+  afterJson  String
+  createdAt  DateTime  @default(now())
+  entry      CashEntry @relation(fields: [entryId], references: [id], onDelete: Restrict)
+
+  @@index([entryId, createdAt])
 }

@@ -4,7 +4,7 @@ import { Plus } from "lucide-react"
 import { MenuCatalog } from "@/components/dashboard/menu-catalog"
 import { CrudSuccessPopup } from "@/components/dashboard/crud-success-popup"
 import { prisma } from "@/lib/prisma/prisma"
-import { unknown } from "zod"
+import { requireAdmin } from "@/lib/auth/permissions"
 
 export const metadata: Metadata = {
   title: "Katalog Menu | Matcha Yuk",
@@ -15,24 +15,25 @@ export default async function CatalogPage({
 }: {
   searchParams: Promise<{ status?: string }>
 }) {
+  await requireAdmin()
   const { status } = await searchParams
-  const success =  
-      status === "created"
-        ? {
-            title: "Produk ditambahkan",
-            message: "Produk berhasil ditambahkan ke katalog menu.",
-          }
+  const success =
+    status === "created"
+      ? {
+          title: "Produk ditambahkan",
+          message: "Produk berhasil ditambahkan ke katalog menu.",
+        }
       : status === "updated"
-          ? {
-              title: "Produk Berhasil diperbarui",
-              message: "Perubahan produk berhasil disimpan.",
-            }
-      : status === "deleted"
+        ? {
+            title: "Produk Berhasil diperbarui",
+            message: "Perubahan produk berhasil disimpan.",
+          }
+        : status === "deleted"
           ? {
               title: "Produk dihapus",
               message: "Produk berhasil dihapus dari katalog menu.",
             }
-         : null
+          : null
   const [products, categories] = await Promise.all([
     prisma.produk.findMany({
       select: {

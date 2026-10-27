@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+export const MAX_ORDER_QUANTITY = 99
+
 export const paymentRequestSchema = z.strictObject({
   checkoutKey: z.uuid(),
   customerName: z.string().trim().min(1).max(100),
@@ -15,7 +17,7 @@ export const paymentRequestSchema = z.strictObject({
     .array(
       z.strictObject({
         id: z.number().int().positive(),
-        quantity: z.number().int().min(1).max(99),
+        quantity: z.number().int().min(1).max(MAX_ORDER_QUANTITY),
       })
     )
     .min(1)

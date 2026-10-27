@@ -4,16 +4,22 @@ import { paymentRequestSchema } from "@/lib/schemas/payment.schema"
 import {
   createSnapTransaction,
   getMidtransConfig,
+  PaymentConfigurationError,
 } from "@/lib/payment/midtrans"
 import { readPaymentBody } from "@/lib/payment/request"
 
 export const runtime = "nodejs"
 
 export async function POST(request: Request) {
-  if (request.headers.get("origin") !== new URL(request.url).origin) {
-    return Response.json({ error: "Origin tidak diizinkan." }, { status: 403 })
-  }
   try {
+    const config = getMidtransConfig()
+    const origin = request.headers.get("origin")
+    if (origin !== config.appUrl && origin !== new URL(request.url).origin) {
+      return Response.json(
+        { error: "Origin tidak diizinkan." },
+        { status: 403 }
+      )
+    }
     const parsed = paymentRequestSchema.safeParse(
       await readPaymentBody(request)
     )
@@ -22,7 +28,6 @@ export async function POST(request: Request) {
         { error: "Data pesanan tidak valid." },
         { status: 400 }
       )
-    const config = getMidtransConfig()
     const { checkoutKey, items, customerName, phone, note, method } =
       parsed.data
     const requestHash = createHash("sha256")
@@ -43,7 +48,12 @@ export async function POST(request: Request) {
     }
     const products = await prisma.produk.findMany({
       where: { id: { in: items.map((item) => item.id) }, published: true },
-      select: { id: true, name: true, price: true },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        category: { select: { slug: true } },
+      },
     })
     if (
       products.length !== items.length ||
@@ -61,6 +71,7 @@ export async function POST(request: Request) {
         name: product.name,
         price: product.price,
         quantity: item.quantity,
+        countsAsCup: product.category.slug !== "topping",
       }
     })
     const total = orderItems.reduce(
@@ -89,6 +100,7 @@ export async function POST(request: Request) {
           note,
           method,
           total,
+          paymentEnvironment: config.isProduction ? "PRODUCTION" : "SANDBOX",
           items: { create: orderItems },
         },
       })
@@ -126,6 +138,11 @@ export async function POST(request: Request) {
       )
     }
   } catch (error) {
+    if (error instanceof PaymentConfigurationError)
+      return Response.json(
+        { code: "PAYMENT_NOT_CONFIGURED", error: error.message },
+        { status: 503 }
+      )
     if (error instanceof SyntaxError || error instanceof RangeError)
       return Response.json(
         { error: "Body JSON tidak valid atau terlalu besar." },

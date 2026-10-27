@@ -6,21 +6,31 @@ import {
   midtransNotificationSchema,
 } from "@/lib/schemas/payment.schema"
 
+export class PaymentConfigurationError extends Error {
+  constructor() {
+    super("Layanan pembayaran belum dikonfigurasi. Silakan hubungi kedai.")
+  }
+}
+
 export function getMidtransConfig() {
-  const env = z
+  const parsed = z
     .object({
-      MIDTRANS_SERVER_KEY: z.string().min(1),
+      MIDTRANS_SERVER_KEY: z.string().regex(/^(?:SB-)?Mid-server-\S+$/),
       MIDTRANS_IS_PRODUCTION: z.enum(["true", "false"]).default("false"),
-      APP_URL: z.url(),
+      APP_URL: z.url({ protocol: /^https?$/ }),
     })
-    .parse(process.env)
+    .safeParse(process.env)
+  if (!parsed.success) throw new PaymentConfigurationError()
+  const env = parsed.data
   const production = env.MIDTRANS_IS_PRODUCTION === "true"
   const appUrl = new URL(env.APP_URL)
   if (
-    production &&
-    (appUrl.protocol !== "https:" || env.MIDTRANS_SERVER_KEY.startsWith("SB-"))
+    !env.MIDTRANS_SERVER_KEY.startsWith(
+      production ? "Mid-server-" : "SB-Mid-server-"
+    ) ||
+    (production && appUrl.protocol !== "https:")
   ) {
-    throw new Error("Invalid production configuration")
+    throw new PaymentConfigurationError()
   }
   return {
     isProduction: production,

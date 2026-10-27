@@ -1,19 +1,13 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { headers } from "next/headers"
 import { redirect } from "next/navigation"
-import { auth } from "@/lib/auth/auth"
+import { requireAdmin } from "@/lib/auth/permissions"
 import { prisma } from "@/lib/prisma/prisma"
 import {
   productSchema,
   type ProductFormState,
 } from "@/lib/schemas/product.schema"
-
-async function requireSession() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session) redirect("/login")
-}
 
 function refreshCatalog(id?: number) {
   revalidatePath("/dashboard")
@@ -38,11 +32,40 @@ function mutationError(error: unknown): ProductFormState {
   throw error
 }
 
+export async function createProduct(
+  values: unknown
+): Promise<ProductFormState> {
+  await requireAdmin()
+  const result = productSchema.safeParse(values)
+  if (!result.success)
+    return {
+      error: result.error.issues[0]?.message ?? "Data menu tidak valid.",
+    }
+  const { desk, imgUrl, ...fields } = result.data
+  const category = await prisma.category.findUnique({
+    where: { id: fields.categoryId },
+    select: { id: true },
+  })
+  if (!category) return { error: "Kategori tidak ditemukan." }
+  let productId: number
+  try {
+    const product = await prisma.produk.create({
+      data: { ...fields, desk: desk || null, imgUrl: imgUrl || null },
+      select: { id: true },
+    })
+    productId = product.id
+  } catch (error) {
+    return mutationError(error)
+  }
+  refreshCatalog(productId)
+  redirect("/dashboard/menu?status=created")
+}
+
 export async function updateProduct(
   id: number,
   values: unknown
 ): Promise<ProductFormState> {
-  await requireSession()
+  await requireAdmin()
   if (!Number.isSafeInteger(id) || id < 1) {
     return { error: "ID menu tidak valid." }
   }
@@ -73,7 +96,7 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(id: number): Promise<void> {
-  await requireSession()
+  await requireAdmin()
   if (!Number.isSafeInteger(id) || id < 1) {
     throw new Error("ID menu tidak valid.")
   }

@@ -44,6 +44,12 @@ export const authSignUpSchema = z.object({
     .optional(),
 })
 
+export const employeeSchema = authSignUpSchema.pick({
+  name: true,
+  email: true,
+  password: true,
+})
+
 export const loginSchema = z.object({
   identifier: identifierSchema,
   password: passwordSchema,

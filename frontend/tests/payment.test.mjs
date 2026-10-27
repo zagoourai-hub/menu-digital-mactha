@@ -11,7 +11,7 @@ test("payment route and verified webhook with isolated SQLite and mocked Midtran
   const directory = mkdtempSync(join(tmpdir(), "matcha-payment-"))
   const databasePath = join(directory, "test.db")
   process.env.DATABASE_URL = `file:${databasePath}`
-  process.env.MIDTRANS_SERVER_KEY = "SB-test-key"
+  process.env.MIDTRANS_SERVER_KEY = "SB-Mid-server-test-key"
   process.env.MIDTRANS_IS_PRODUCTION = "false"
   process.env.APP_URL = "http://localhost:3001"
   const database = new DatabaseSync(databasePath)
@@ -26,7 +26,7 @@ test("payment route and verified webhook with isolated SQLite and mocked Midtran
   const { POST: pay } = await import("../app/api/payment/route.ts")
   const { POST: webhook } = await import("../app/api/payment/webhook/route.ts")
   const { GET: status } = await import("../app/api/payment/[id]/route.ts")
-  const { paymentStatus, canUpdatePayment } =
+  const { paymentStatus, canUpdatePayment, getMidtransConfig } =
     await import("../lib/payment/midtrans.ts")
   const require = createRequire(import.meta.url)
   const HttpClient = require("midtrans-client/lib/httpClient.js")
@@ -39,7 +39,7 @@ test("payment route and verified webhook with isolated SQLite and mocked Midtran
   let confirmedAmount = "40000.00"
   let snapBody
   HttpClient.prototype.request = async function (method, serverKey, url, body) {
-    assert.equal(serverKey, "SB-test-key")
+    assert.equal(serverKey, "SB-Mid-server-test-key")
     assert.equal(this.http_client.defaults.timeout, 10000)
     assert.equal(this.http_client.defaults.maxRedirects, 0)
     if (String(url).includes("snap/v1/transactions")) {
@@ -109,7 +109,7 @@ test("payment route and verified webhook with isolated SQLite and mocked Midtran
     }
     body.signature_key = createHash("sha512")
       .update(
-        `${body.order_id}${body.status_code}${body.gross_amount}SB-test-key`
+        `${body.order_id}${body.status_code}${body.gross_amount}SB-Mid-server-test-key`
       )
       .digest("hex")
     return body
@@ -121,6 +121,52 @@ test("payment route and verified webhook with isolated SQLite and mocked Midtran
         body: JSON.stringify(body),
       })
     )
+
+  await t.test(
+    "invalid configuration reports a safe error before creating an order or contacting Midtrans",
+    async () => {
+      const original = {
+        APP_URL: process.env.APP_URL,
+        MIDTRANS_SERVER_KEY: process.env.MIDTRANS_SERVER_KEY,
+        MIDTRANS_IS_PRODUCTION: process.env.MIDTRANS_IS_PRODUCTION,
+      }
+      try {
+        for (const config of [
+          { APP_URL: "" },
+          { APP_URL: "ftp://example.com" },
+          { MIDTRANS_SERVER_KEY: "Mid-server-test-key" },
+          { MIDTRANS_SERVER_KEY: "SB-Mid-client-test-key" },
+          { MIDTRANS_SERVER_KEY: "invalid-key" },
+          { MIDTRANS_IS_PRODUCTION: "invalid" },
+          { MIDTRANS_IS_PRODUCTION: "true", APP_URL: "https://example.com" },
+          {
+            MIDTRANS_IS_PRODUCTION: "true",
+            MIDTRANS_SERVER_KEY: "Mid-server-test-key",
+          },
+        ]) {
+          Object.assign(process.env, original, config)
+          const response = await pay(request(payload))
+          assert.equal(response.status, 503)
+          assert.deepEqual(await response.json(), {
+            code: "PAYMENT_NOT_CONFIGURED",
+            error:
+              "Layanan pembayaran belum dikonfigurasi. Silakan hubungi kedai.",
+          })
+          assert.equal(await prisma.order.count(), 0)
+          assert.equal(snapCalls, 0)
+        }
+        Object.assign(process.env, original, {
+          MIDTRANS_IS_PRODUCTION: "true",
+          MIDTRANS_SERVER_KEY: "Mid-server-test-key",
+          APP_URL: "https://example.com",
+        })
+        assert.equal(getMidtransConfig().isProduction, true)
+        assert.equal(getMidtransConfig().appUrl, "https://example.com")
+      } finally {
+        Object.assign(process.env, original)
+      }
+    }
+  )
 
   await t.test(
     "reject origin, malformed/large body, duplicates, invalid quantity, unknown and unpublished products",
@@ -168,6 +214,33 @@ test("payment route and verified webhook with isolated SQLite and mocked Midtran
 
   let orderId
   await t.test(
+    "configured public origin works behind a localhost proxy while foreign origins are rejected",
+    async () => {
+      const original = process.env.APP_URL
+      process.env.APP_URL = "https://menu-test.ngrok-free.dev"
+      try {
+        const response = await pay(
+          request(
+            { ...payload, items: [{ id: 999999, quantity: 1 }] },
+            process.env.APP_URL
+          )
+        )
+        assert.equal(response.status, 400)
+        assert.deepEqual(await response.json(), {
+          error: "Ada produk yang tidak tersedia.",
+        })
+        assert.equal(
+          (await pay(request(payload, "https://evil.test"))).status,
+          403
+        )
+        assert.equal(snapCalls, 0)
+      } finally {
+        process.env.APP_URL = original
+      }
+    }
+  )
+
+  await t.test(
     "create Snap from server prices, save snapshots and deduplicate retry",
     async () => {
       const response = await pay(request(payload))
@@ -180,6 +253,8 @@ test("payment route and verified webhook with isolated SQLite and mocked Midtran
         include: { items: true },
       })
       assert.equal(order.items[0].price, 20000)
+      assert.equal(order.items[0].countsAsCup, true)
+      assert.equal(order.paymentEnvironment, "SANDBOX")
       assert.equal(order.note, "Less ice")
       assert.equal((await pay(request(payload))).status, 200)
       assert.equal(snapCalls, 1)
@@ -314,6 +389,41 @@ test("payment route and verified webhook with isolated SQLite and mocked Midtran
     assert.equal(snapCalls, calls + 1)
   })
 
+  await t.test(
+    "checkout snapshots topping classification before category changes",
+    async () => {
+      const toppingCategory = await prisma.category.create({
+        data: { name: "Topping", slug: "topping" },
+      })
+      const topping = await prisma.produk.create({
+        data: {
+          name: "Pearl",
+          judul: "Pearl",
+          price: 5000,
+          categoryId: toppingCategory.id,
+          published: true,
+        },
+      })
+      const response = await pay(
+        request({
+          ...payload,
+          checkoutKey: randomUUID(),
+          items: [{ id: topping.id, quantity: 3 }],
+        })
+      )
+      assert.equal(response.status, 201)
+      const created = await response.json()
+      await prisma.category.update({
+        where: { id: toppingCategory.id },
+        data: { slug: "renamed-topping" },
+      })
+      const snapshot = await prisma.orderItem.findFirstOrThrow({
+        where: { orderId: created.orderId },
+      })
+      assert.equal(snapshot.countsAsCup, false)
+      assert.equal(snapshot.quantity, 3)
+    }
+  )
   await t.test(
     "persistent quota prevents excessive new Snap requests",
     async () => {

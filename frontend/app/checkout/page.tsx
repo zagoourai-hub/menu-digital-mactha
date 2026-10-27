@@ -37,13 +37,15 @@ export default function CheckoutPage() {
   const count = items.reduce((sum, item) => sum + item.quantity, 0)
   const checkout = useRef({ payload: "", key: "" })
   const submitting = useRef(false)
-  const [pending, setPending] = useState(false)
+  const pending = useOrderStore((state) => state.isCheckingOut)
+  const setPending = useOrderStore((state) => state.setCheckingOut)
+  const recordCheckout = useOrderStore((state) => state.recordCheckout)
   const [error, setError] = useState("")
   const [statusUrl, setStatusUrl] = useState("")
 
   async function pay(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (submitting.current || !items.length) return
+    if (submitting.current || pending || !items.length) return
     submitting.current = true
     setPending(true)
     setError("")
@@ -97,8 +99,10 @@ export default function CheckoutPage() {
             .optional(),
         })
         .parse(await response.json())
-      if (result.orderId)
+      if (result.orderId) {
+        recordCheckout(result.orderId, payload.items)
         sessionStorage.setItem("matcha-checkout-order", result.orderId)
+      }
       if (result.statusUrl) setStatusUrl(result.statusUrl)
       if (!response.ok)
         throw new Error(result.error ?? "Pembayaran gagal diproses.")
@@ -151,218 +155,221 @@ export default function CheckoutPage() {
           onSubmit={pay}
           className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.7fr)_minmax(320px,1fr)]"
         >
-          <div className="space-y-6">
-            <section className="flex items-center gap-4 border border-border bg-card p-5 shadow-sm sm:p-7">
-              <span className="flex size-11 items-center justify-center bg-primary/10 text-primary">
-                <ReceiptText className="size-5" aria-hidden="true" />
-              </span>
-              <div>
-                <h2 className="text-xl font-bold text-card-foreground">
-                  Detail pesanan
+          <fieldset disabled={pending} className="contents">
+            <div className="space-y-6">
+              <section className="flex items-center gap-4 border border-border bg-card p-5 shadow-sm sm:p-7">
+                <span className="flex size-11 items-center justify-center bg-primary/10 text-primary">
+                  <ReceiptText className="size-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h2 className="text-xl font-bold text-card-foreground">
+                    Detail pesanan
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {count} item dalam pesanan Anda
+                  </p>
+                </div>
+              </section>
+
+              <section className="border border-border bg-card p-5 shadow-sm sm:p-7">
+                <h2 className="text-lg font-bold text-card-foreground">
+                  Data pemesan
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {count} item dalam pesanan Anda
+                  Kontak untuk informasi pesanan.
                 </p>
-              </div>
-            </section>
+                <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                  <label className="text-sm font-semibold text-card-foreground">
+                    Nama pemesan
+                    <input
+                      name="customerName"
+                      required
+                      maxLength={100}
+                      autoComplete="name"
+                      placeholder="Nama Anda"
+                      className="mt-2 h-12 w-full border border-input bg-background px-4 font-normal text-foreground outline-none focus:border-primary"
+                    />
+                  </label>
+                  <label className="text-sm font-semibold text-card-foreground">
+                    Nomor WhatsApp
+                    <input
+                      name="phone"
+                      pattern="(\+62|62|0)[0-9]{8,13}"
+                      maxLength={16}
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
+                      placeholder="08..."
+                      className="mt-2 h-12 w-full border border-input bg-background px-4 font-normal text-foreground outline-none focus:border-primary"
+                    />
+                  </label>
+                </div>
+              </section>
 
-            <section className="border border-border bg-card p-5 shadow-sm sm:p-7">
-              <h2 className="text-lg font-bold text-card-foreground">
-                Data pemesan
-              </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Kontak untuk informasi pesanan.
-              </p>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <label className="text-sm font-semibold text-card-foreground">
-                  Nama pemesan
-                  <input
-                    name="customerName"
-                    required
-                    maxLength={100}
-                    autoComplete="name"
-                    placeholder="Nama Anda"
-                    className="mt-2 h-12 w-full border border-input bg-background px-4 font-normal text-foreground outline-none focus:border-primary"
-                  />
-                </label>
-                <label className="text-sm font-semibold text-card-foreground">
-                  Nomor WhatsApp
-                  <input
-                    name="phone"
-                    pattern="(\+62|62|0)[0-9]{8,13}"
-                    maxLength={16}
-                    type="tel"
-                    inputMode="tel"
-                    autoComplete="tel"
-                    placeholder="08..."
-                    className="mt-2 h-12 w-full border border-input bg-background px-4 font-normal text-foreground outline-none focus:border-primary"
-                  />
-                </label>
-              </div>
-            </section>
-
-            <section className="border border-border bg-card p-5 shadow-sm sm:p-7">
-              <fieldset>
-                <legend className="text-xl font-bold text-card-foreground">
-                  Pilih Metode Pembayaran
-                </legend>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Pilih metode untuk pesanan Anda.
-                </p>
-                <div className="mt-5 space-y-3">
-                  {methods.map(({ id, name, detail, icon: Icon }) => (
-                    <label
-                      key={id}
-                      className={`flex cursor-pointer items-center gap-4 border p-4 ${method === id ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"} ${id === "cash" ? "opacity-50" : ""}`}
-                    >
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value={id}
-                        disabled={id === "cash" || pending}
-                        checked={method === id}
-                        onChange={() => setMethod(id)}
-                        className="accent-primary"
-                      />
-                      <Icon
-                        className="size-5 shrink-0 text-primary"
-                        aria-hidden="true"
-                      />
-                      <span className="flex-1">
-                        <span className="block font-semibold text-card-foreground">
-                          {name}
-                        </span>
-                        <span className="mt-1 block text-sm text-muted-foreground">
-                          {detail}
-                          {id === "cash" && " — belum tersedia"}
-                        </span>
-                      </span>
-                      {method === id && (
-                        <Check
-                          className="size-5 text-primary"
+              <section className="border border-border bg-card p-5 shadow-sm sm:p-7">
+                <fieldset>
+                  <legend className="text-xl font-bold text-card-foreground">
+                    Pilih Metode Pembayaran
+                  </legend>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Pilih metode untuk pesanan Anda.
+                  </p>
+                  <div className="mt-5 space-y-3">
+                    {methods.map(({ id, name, detail, icon: Icon }) => (
+                      <label
+                        key={id}
+                        className={`flex cursor-pointer items-center gap-4 border p-4 ${method === id ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"} ${id === "cash" ? "opacity-50" : ""}`}
+                      >
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value={id}
+                          disabled={id === "cash" || pending}
+                          checked={method === id}
+                          onChange={() => setMethod(id)}
+                          className="accent-primary"
+                        />
+                        <Icon
+                          className="size-5 shrink-0 text-primary"
                           aria-hidden="true"
                         />
-                      )}
-                    </label>
-                  ))}
-                </div>
-                {method === "qris" && (
-                  <div className="mt-4 flex flex-col items-center border border-primary bg-primary/5 px-5 py-8 text-center">
-                    <QrCode
-                      className="size-16 text-primary"
-                      aria-hidden="true"
-                    />
-                    <p className="mt-3 text-sm text-muted-foreground">
-                      Kode QR akan tampil di halaman pembayaran Midtrans.
-                    </p>
+                        <span className="flex-1">
+                          <span className="block font-semibold text-card-foreground">
+                            {name}
+                          </span>
+                          <span className="mt-1 block text-sm text-muted-foreground">
+                            {detail}
+                            {id === "cash" && " — belum tersedia"}
+                          </span>
+                        </span>
+                        {method === id && (
+                          <Check
+                            className="size-5 text-primary"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </label>
+                    ))}
                   </div>
-                )}
-              </fieldset>
-            </section>
-
-            <section className="border border-border bg-card p-5 shadow-sm sm:p-7">
-              <label
-                htmlFor="barista-note"
-                className="text-lg font-bold text-card-foreground"
-              >
-                Catatan untuk Barista
-              </label>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Opsional, tulis permintaan untuk pesanan Anda.
-              </p>
-              <textarea
-                id="barista-note"
-                name="note"
-                rows={3}
-                maxLength={200}
-                placeholder="Contoh: es sedikit"
-                className="mt-4 w-full resize-y border border-input bg-background p-4 text-foreground outline-none focus:border-primary"
-              />
-            </section>
-          </div>
-
-          <aside className="border border-border bg-card p-5 shadow-sm sm:p-7 lg:sticky lg:top-24">
-            <h2 className="text-xl font-bold text-card-foreground">
-              Ringkasan Pesanan
-            </h2>
-            <p className="mt-1 font-mono text-xs text-muted-foreground">
-              {count} item
-            </p>
-            {items.length === 0 ? (
-              <p className="mt-5 border-t border-border pt-5 text-sm text-muted-foreground">
-                Pesanan masih kosong. Pilih menu untuk melanjutkan.
-              </p>
-            ) : (
-              <ul className="mt-5 divide-y divide-border border-y border-border">
-                {items.map((item) => (
-                  <li key={item.id} className="flex items-center gap-3 py-4">
-                    <div className="relative size-14 shrink-0 overflow-hidden bg-muted">
-                      {item.imgUrl && (
-                        <Image
-                          src={item.imgUrl}
-                          alt=""
-                          fill
-                          sizes="56px"
-                          className="object-cover"
-                        />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="block truncate font-semibold text-card-foreground">
-                        {item.name}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        Rp {item.price.toLocaleString("id-ID")} per item
-                      </span>
-                      <OrderQuantity
-                        id={item.id}
-                        name={item.name}
-                        quantity={item.quantity}
+                  {method === "qris" && (
+                    <div className="mt-4 flex flex-col items-center border border-primary bg-primary/5 px-5 py-8 text-center">
+                      <QrCode
+                        className="size-16 text-primary"
+                        aria-hidden="true"
                       />
+                      <p className="mt-3 text-sm text-muted-foreground">
+                        Kode QR akan tampil di halaman pembayaran Midtrans.
+                      </p>
                     </div>
-                    <span className="font-mono text-sm font-semibold text-card-foreground">
-                      Rp {(item.price * item.quantity).toLocaleString("id-ID")}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="mt-5 flex justify-between border-b border-border pb-4 text-sm text-muted-foreground">
-              <span>Subtotal</span>
-              <span className="font-mono text-foreground">
-                Rp {total.toLocaleString("id-ID")}
-              </span>
+                  )}
+                </fieldset>
+              </section>
+
+              <section className="border border-border bg-card p-5 shadow-sm sm:p-7">
+                <label
+                  htmlFor="barista-note"
+                  className="text-lg font-bold text-card-foreground"
+                >
+                  Catatan untuk Barista
+                </label>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Opsional, tulis permintaan untuk pesanan Anda.
+                </p>
+                <textarea
+                  id="barista-note"
+                  name="note"
+                  rows={3}
+                  maxLength={200}
+                  placeholder="Contoh: es sedikit"
+                  className="mt-4 w-full resize-y border border-input bg-background p-4 text-foreground outline-none focus:border-primary"
+                />
+              </section>
             </div>
-            <div className="flex items-center justify-between gap-3 py-5 font-bold text-card-foreground">
-              <span>Total Tagihan</span>
-              <span className="font-mono text-2xl text-primary">
-                Rp {total.toLocaleString("id-ID")}
-              </span>
-            </div>
-            <button
-              type="submit"
-              disabled={pending || items.length === 0 || method === "cash"}
-              className="flex h-12 w-full items-center justify-center bg-primary px-5 font-semibold text-primary-foreground disabled:opacity-50"
-            >
-              {pending ? "Memproses pembayaran…" : "Bayar dengan Midtrans"}
-            </button>
-            <p className="mt-3 text-xs leading-5 text-muted-foreground">
-              Total akhir dihitung dari harga menu terbaru di server.
-            </p>
-            {error && (
-              <p role="alert" className="mt-3 text-sm text-destructive">
-                {error}
+
+            <aside className="border border-border bg-card p-5 shadow-sm sm:p-7 lg:sticky lg:top-24">
+              <h2 className="text-xl font-bold text-card-foreground">
+                Ringkasan Pesanan
+              </h2>
+              <p className="mt-1 font-mono text-xs text-muted-foreground">
+                {count} item
               </p>
-            )}
-            {statusUrl && (
-              <Link
-                href={statusUrl}
-                className="mt-3 block text-sm text-primary underline"
+              {items.length === 0 ? (
+                <p className="mt-5 border-t border-border pt-5 text-sm text-muted-foreground">
+                  Pesanan masih kosong. Pilih menu untuk melanjutkan.
+                </p>
+              ) : (
+                <ul className="mt-5 divide-y divide-border border-y border-border">
+                  {items.map((item) => (
+                    <li key={item.id} className="flex items-center gap-3 py-4">
+                      <div className="relative size-14 shrink-0 overflow-hidden bg-muted">
+                        {item.imgUrl && (
+                          <Image
+                            src={item.imgUrl}
+                            alt=""
+                            fill
+                            sizes="56px"
+                            className="object-cover"
+                          />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <span className="block truncate font-semibold text-card-foreground">
+                          {item.name}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          Rp {item.price.toLocaleString("id-ID")} per item
+                        </span>
+                        <OrderQuantity
+                          id={item.id}
+                          name={item.name}
+                          quantity={item.quantity}
+                        />
+                      </div>
+                      <span className="font-mono text-sm font-semibold text-card-foreground">
+                        Rp{" "}
+                        {(item.price * item.quantity).toLocaleString("id-ID")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="mt-5 flex justify-between border-b border-border pb-4 text-sm text-muted-foreground">
+                <span>Subtotal</span>
+                <span className="font-mono text-foreground">
+                  Rp {total.toLocaleString("id-ID")}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3 py-5 font-bold text-card-foreground">
+                <span>Total Tagihan</span>
+                <span className="font-mono text-2xl text-primary">
+                  Rp {total.toLocaleString("id-ID")}
+                </span>
+              </div>
+              <button
+                type="submit"
+                disabled={pending || items.length === 0 || method === "cash"}
+                className="flex h-12 w-full items-center justify-center bg-primary px-5 font-semibold text-primary-foreground disabled:opacity-50"
               >
-                Lihat status pesanan
-              </Link>
-            )}
-          </aside>
+                {pending ? "Memproses pembayaran…" : "Bayar "}
+              </button>
+              <p className="mt-3 text-xs leading-5 text-muted-foreground">
+                Total akhir dihitung dari harga menu terbaru di server.
+              </p>
+              {error && (
+                <p role="alert" className="mt-3 text-sm text-destructive">
+                  {error}
+                </p>
+              )}
+              {statusUrl && (
+                <Link
+                  href={statusUrl}
+                  className="mt-3 block text-sm text-primary underline"
+                >
+                  Lihat status pesanan
+                </Link>
+              )}
+            </aside>
+          </fieldset>
         </form>
       </div>
     </main>

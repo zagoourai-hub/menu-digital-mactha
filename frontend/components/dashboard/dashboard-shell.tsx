@@ -5,9 +5,14 @@ import { DashboardNavigation } from "./dashboard-navigation"
 type DashboardShellProps = {
   children: React.ReactNode
   user: { name: string; email: string }
+  isAdmin: boolean
 }
 
-export function DashboardShell({ children, user }: DashboardShellProps) {
+export function DashboardShell({
+  children,
+  user,
+  isAdmin,
+}: DashboardShellProps) {
   return (
     <div className="min-h-screen bg-muted/30 text-foreground lg:pl-64">
       <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-border bg-card lg:flex">
@@ -22,7 +27,7 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
             Matcha Yuk
           </Link>
         </div>
-        <DashboardNavigation />
+        <DashboardNavigation isAdmin={isAdmin} />
         <div className="mt-auto border-t border-border p-4 text-sm">
           <p className="font-semibold">{user.name}</p>
           <p className="truncate text-xs text-muted-foreground">{user.email}</p>
@@ -41,12 +46,12 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
                 <span className="font-semibold">Menu</span>
               </summary>
               <div className="absolute top-10 left-0 w-64 border border-border bg-card shadow-lg">
-                <DashboardNavigation />
+                <DashboardNavigation isAdmin={isAdmin} />
               </div>
             </details>
           </div>
           <span className="font-mono text-xs text-muted-foreground">
-            Portal merchant
+            {isAdmin ? "Pemilik kedai" : "Karyawan"}
           </span>
           <Link
             href="/#menu"

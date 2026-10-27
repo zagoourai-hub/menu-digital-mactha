@@ -1,7 +1,7 @@
 import { APIError, createAuthMiddleware } from "better-auth/api"
-import { betterAuth, } from "better-auth"
+import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
-import { openAPI } from "better-auth/plugins"
+import { admin } from "better-auth/plugins"
 import { authSignInSchema, authSignUpSchema } from "@/lib/schemas/auth.schema"
 import { prisma } from "../prisma/prisma"
 import { i18n, locales } from "@better-auth/i18n"
@@ -26,13 +26,20 @@ const validateAuthBody = createAuthMiddleware(async (ctx) => {
 export const auth = betterAuth({
   user: {
     additionalFields: {
+      role: {
+        type: ["user", "admin"],
+        required: false,
+        defaultValue: "user",
+        input: false,
+      },
       namaKedai: { type: "string", required: false },
       kota: { type: "string", required: false },
-      phone: { type: "string", required: false }
-    }
+      phone: { type: "string", required: false },
+    },
   },
   emailAndPassword: {
     enabled: true,
+    disableSignUp: true,
     minPasswordLength: 8,
     maxPasswordLength: 128,
   },
@@ -42,10 +49,11 @@ export const auth = betterAuth({
         ...locales,
         id: {
           ...locales.id,
-          INVALID_EMAIL_OR_PASSWORD: 'Email Atau Kata Sandi Salah'
+          INVALID_EMAIL_OR_PASSWORD: "Email Atau Kata Sandi Salah",
         },
       },
     }),
+    admin(),
     nextCookies(),
   ],
   hooks: {
@@ -75,10 +83,12 @@ export const auth = betterAuth({
     provider: "sqlite",
   }),
   advanced: {
-   
     database: {
       joins: true,
     },
   },
-  trustedOrigins: ["http://localhost:3001"],
+  trustedOrigins: [
+    "http://localhost:3001",
+    ...(process.env.APP_URL ? [process.env.APP_URL] : []),
+  ],
 })

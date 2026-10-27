@@ -2,7 +2,6 @@ import type { ReactNode } from "react"
 import Link from "next/link"
 import {
   ArrowLeft,
-  ArrowRight,
   ChartNoAxesCombined,
   Coffee,
   LockKeyhole,
@@ -67,13 +66,6 @@ export function AuthLayout({ mode, children }: AuthLayoutProps) {
               className={`px-4 py-2 text-sm font-semibold transition-colors ${isLogin ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
             >
               Masuk
-            </Link>
-            <Link
-              href="/register"
-              aria-current={!isLogin ? "page" : undefined}
-              className={`px-4 py-2 text-sm font-semibold transition-colors ${!isLogin ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              Daftar
             </Link>
           </nav>
         </div>
@@ -165,7 +157,7 @@ export function AuthLayout({ mode, children }: AuthLayoutProps) {
               </p>
             </div>
 
-            <div className="mb-6 grid grid-cols-2 gap-1 bg-muted p-1 sm:hidden">
+            <div className="mb-6 grid gap-1 bg-muted p-1 sm:hidden">
               <Link
                 href="/login"
                 aria-current={isLogin ? "page" : undefined}
@@ -173,26 +165,13 @@ export function AuthLayout({ mode, children }: AuthLayoutProps) {
               >
                 Masuk
               </Link>
-              <Link
-                href="/register"
-                aria-current={!isLogin ? "page" : undefined}
-                className={`py-3 text-center font-semibold ${!isLogin ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground"}`}
-              >
-                Daftar Mitra
-              </Link>
             </div>
 
             {children}
 
             <div className="mt-7 border-t border-border pt-5 text-center text-sm text-muted-foreground">
-              {isLogin ? "Belum punya akun kedai?" : "Sudah punya akun?"}{" "}
-              <Link
-                href={isLogin ? "/register" : "/login"}
-                className="font-bold text-primary hover:underline"
-              >
-                {isLogin ? "Daftar mitra" : "Masuk di sini"}{" "}
-                <ArrowRight className="inline size-4" aria-hidden="true" />
-              </Link>
+              Akun karyawan dibuat oleh pemilik kedai. Hubungi pemilik jika Anda
+              belum memiliki akun.
             </div>
 
             <p className="mt-6 flex items-center justify-center gap-2 border-t border-border pt-5 text-center font-mono text-[11px] text-muted-foreground">
@@ -200,7 +179,7 @@ export function AuthLayout({ mode, children }: AuthLayoutProps) {
                 className="size-3.5 text-primary"
                 aria-hidden="true"
               />
-              Form demo · autentikasi belum diaktifkan
+              Akses untuk pemilik kedai dan karyawan
             </p>
           </section>
         </div>

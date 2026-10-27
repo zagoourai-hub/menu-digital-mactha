@@ -15,6 +15,7 @@ import { BorderBeam } from "./ui/border-beam"
 import { useMenu } from "@/lib/hook/use-menu"
 import { cn } from "@/lib/utils"
 import { useOrderStore } from "@/lib/stores/order.store"
+import { MAX_ORDER_QUANTITY } from "@/lib/schemas/payment.schema"
 
 const tabClass =
   "cursor-pointer rounded-full border px-5 py-2 text-sm font-medium transition-colors"
@@ -23,6 +24,8 @@ export default function Kategory() {
   const { data, error, isError, refetch, isPending } = useMenu()
   const [active, setActive] = useState<number | "all">("all")
   const addItem = useOrderStore((state) => state.addItem)
+  const pending = useOrderStore((state) => state.isCheckingOut)
+  const items = useOrderStore((state) => state.items)
 
   if (isPending)
     return (
@@ -132,6 +135,15 @@ export default function Kategory() {
               <button
                 type="button"
                 aria-label={`Tambah ${product.name}`}
+                disabled={
+                  pending ||
+                  items.some(
+                    (item) =>
+                      item.id === product.id &&
+                      item.quantity >= MAX_ORDER_QUANTITY
+                  )
+                }
+                title="Maksimal 99 per produk"
                 onClick={() => addItem(product)}
                 className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition hover:opacity-90"
               >
